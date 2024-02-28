@@ -1,9 +1,12 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import connectDB from './db/index.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+connectDB();
 
 app.use(cors());
 app.use(helmet());
