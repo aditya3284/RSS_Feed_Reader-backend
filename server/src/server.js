@@ -1,21 +1,27 @@
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
 import connectDB from './db/index.js';
+import app from './app.js';
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 
-connectDB();
+connectDB()
+	.then((db) => {
+		console.log(
+			`\nMongoDB connected successfully !! Database Host : ${db.connection.host}\n`
+		);
 
-app.use(cors());
-app.use(helmet());
-app.use(express.json());
+		app.on('error', (error) => {
+			console.log('\nServer Error Occured !!/n ERROR: ', error);
+			throw error;
+		});
+
+		app.listen(PORT, () => {
+			console.log(`\nServer listening on port ${PORT}`);
+		});
+	})
+	.catch((error) => {
+		console.log('\nServer Connection Failed !!\nERROR: ', error);
+	});
 
 app.get('/', (_req, res) => {
 	res.send('hello from server!');
-});
-
-app.listen(PORT, () => {
-	console.log(`Server listening on port ${PORT}`);
 });
