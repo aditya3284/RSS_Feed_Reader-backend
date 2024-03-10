@@ -6,3 +6,5 @@ export const HttpsStatusCode = {
 	NOT_FOUND: 404,
 	INTERNAL_SERVER_ERROR: 500,
 };
+
+export const emailRegex = '^w+([.+-]?w+)*@w+([.-]?w+)*(.w{2,6})+$';
