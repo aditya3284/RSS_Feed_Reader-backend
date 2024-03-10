@@ -51,6 +51,12 @@ const userSchema = new Schema(
 			},
 			default: 'I prefer not to share',
 		},
+		age: {
+			type: Number,
+			min: 5,
+			max: 125,
+			required: [true, 'age is required'],
+		},
 		profilePicture: {
 			type: String,
 		},
