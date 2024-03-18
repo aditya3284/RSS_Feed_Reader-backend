@@ -21,7 +21,3 @@ connectDB()
 	.catch((error) => {
 		console.log('\nServer Connection Failed !!\nERROR: ', error);
 	});
-
-app.get('/', (_req, res) => {
-	res.send('hello from server!');
-});

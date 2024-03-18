@@ -7,4 +7,4 @@ export const HttpsStatusCode = {
 	INTERNAL_SERVER_ERROR: 500,
 };
 
-export const emailRegex = '^w+([.+-]?w+)*@w+([.-]?w+)*(.w{2,6})+$';
+export const emailRegex = new RegExp('^w+([.+-]?w+)*@w+([.-]?w+)*(.w{2,6})+$');

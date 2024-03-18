@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { emailRegex } from '../constants.js';
+import bcrypt from 'bcrypt';
 
 const nameSchema = new Schema({
 	firstName: {
@@ -91,5 +92,17 @@ const userSchema = new Schema(
 	},
 	{ timestamps: true, minimize: true }
 );
+
+userSchema.pre('save', async function (next) {
+	if (!this.isModified('password')) return next();
+
+	try {
+		this.password = await bcrypt.hash(this.password, 10);
+	} catch (error) {
+		next(error);
+	}
+
+	next();
+});
 
 export const User = model('User', userSchema);

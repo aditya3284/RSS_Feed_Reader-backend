@@ -1,4 +1,4 @@
-export class APIResponse {
+export default class APIResponse {
 	constructor(httpStatusCode, data, message = 'Success') {
 		this.httpStatusCode = httpStatusCode;
 		this.data = data;
