@@ -12,7 +12,21 @@ const registerRequestSchema = Joi.object({
 	password: Joi.string().alphanum().min(8).max(48).required(),
 });
 
+const loginRequestSchema = Joi.object({
+	email: Joi.string()
+		.email()
+		.lowercase()
+		.required()
+		.trim(true)
+		.pattern(emailRegex, { name: 'E-mail' }),
+	password: Joi.string().alphanum().min(8).max(48).required(),
+});
+
 const validateRegistorRequest = async (value) => {
-	await registerRequestSchema.validateAsync(value);
+	await registerRequestSchema.validateAsync(value, { abortEarly: false });
 };
-export { validateRegistorRequest };
+
+const validateLoginRequest = async (value) => {
+	await loginRequestSchema.validateAsync(value, { abortEarly: false });
+};
+export { validateRegistorRequest, validateLoginRequest };

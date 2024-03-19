@@ -5,7 +5,6 @@ import bcrypt from 'bcrypt';
 const nameSchema = new Schema({
 	firstName: {
 		type: String,
-		required: [true, 'first name is required'],
 		minLength: [2, 'first name must be at least 2 characters, got {VALUE}'],
 		trim: true,
 	},
@@ -15,7 +14,6 @@ const nameSchema = new Schema({
 	},
 	lastName: {
 		type: String,
-		required: [true, 'last name is required'],
 		minLength: [2, 'last name must be at least 2 characters, got {VALUE}'],
 	},
 });
@@ -37,11 +35,12 @@ const userSchema = new Schema(
 		},
 		email: {
 			type: String,
-			required: true,
-			unique: true,
+			required: [true, 'email address is required'],
+			unique: [true, 'email address must be unique'],
 			trim: true,
 			lowercase: true,
 			match: [emailRegex, 'expects a valid email address, got {VALUE}'],
+			select: true,
 		},
 		fullName: { nameSchema },
 		gender: {
@@ -51,32 +50,38 @@ const userSchema = new Schema(
 				message: `{VALUE} is not supported`,
 			},
 			default: 'I prefer not to share',
+			select: false,
 		},
 		age: {
 			type: Number,
 			min: 5,
 			max: 125,
-			required: [true, 'age is required'],
+			select: false,
 		},
 		profilePicture: {
 			type: String,
+			select: false,
 		},
 		coverImage: {
 			type: String,
+			select: false,
 		},
 		password: {
 			type: String,
 			required: [true, 'password is required'],
+			select: false,
 		},
 		verified: {
 			type: Boolean,
 			default: false,
+			select: false,
 		},
 		watchHistory: [
 			{
 				type: Schema.Types.ObjectId,
 				ref: 'YT_Video',
 				default: undefined,
+				select: false,
 			},
 		],
 		readHistory: [
@@ -84,10 +89,12 @@ const userSchema = new Schema(
 				type: Schema.Types.ObjectId,
 				ref: 'Feed_Item',
 				default: undefined,
+				select: false,
 			},
 		],
 		refreshToken: {
 			type: String,
+			select: false,
 		},
 	},
 	{ timestamps: true, minimize: true }
@@ -103,6 +110,10 @@ userSchema.pre('save', async function (next) {
 	}
 
 	next();
+});
+
+userSchema.method('validatePasswordFromDb', async function (plainTextPassword) {
+	return await bcrypt.compare(plainTextPassword, this.password);
 });
 
 export const User = model('User', userSchema);
