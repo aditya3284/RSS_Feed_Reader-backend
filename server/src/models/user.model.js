@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { emailRegex } from '../constants.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const nameSchema = new Schema({
 	firstName: {
@@ -114,6 +115,22 @@ userSchema.pre('save', async function (next) {
 
 userSchema.method('validatePasswordFromDb', async function (plainTextPassword) {
 	return await bcrypt.compare(plainTextPassword, this.password);
+});
+
+userSchema.method('generateAccessToken', async function () {
+	const username = await bcrypt.hash(this.username, 10);
+	return jwt.sign(username, process.env.ACCESS_TOKEN_JWT_SECERT, {
+		algorithm: process.env.ACCESS_TOKEN_JWT_ALGORITHM,
+		expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+	});
+});
+
+userSchema.method('generateRefreshToken', async function () {
+	const userId = await bcrypt.hash(this._id, 10);
+	return jwt.sign(userId, process.env.REFRESH_TOKEN_JWT_SECERT, {
+		algorithm: process.env.REFRESH_TOKEN_JWT_ALGORITHM,
+		expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+	});
 });
 
 export const User = model('User', userSchema);

@@ -2,7 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import router from './routes/user.route';
+import router from './routes/user.route.js';
 
 const app = express();
 const corsOptions = { origin: process.env.CORS_ORIGIN };
