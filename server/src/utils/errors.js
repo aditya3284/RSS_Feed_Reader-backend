@@ -1,16 +1,11 @@
 export default class APIError extends Error {
-	constructor(httpStatusCode, message, cause) {
+	constructor(httpStatusCode, message) {
 		super(message);
 
 		this.name = this.constructor.name;
 		this.message = message;
 		this.httpStatusCode = httpStatusCode;
-		this.cause = cause;
 
-		if (this.cause) {
-			this.stack = this.cause.stack;
-		} else {
-			Error.captureStackTrace(this, this.constructor);
-		}
+		Error.captureStackTrace(this, this.constructor);
 	}
 }

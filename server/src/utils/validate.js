@@ -22,11 +22,11 @@ const loginRequestSchema = Joi.object({
 	password: Joi.string().alphanum().min(8).max(48).required(),
 });
 
-const validateRegistorRequest = async (value) => {
-	await registerRequestSchema.validateAsync(value, { abortEarly: false });
+const validateRegistorRequest = (value) => {
+return registerRequestSchema.validate(value, { abortEarly: false });
 };
 
-const validateLoginRequest = async (value) => {
-	await loginRequestSchema.validateAsync(value, { abortEarly: false });
+const validateLoginRequest =  (value) => {
+ return loginRequestSchema.validate(value, { abortEarly: false });
 };
 export { validateRegistorRequest, validateLoginRequest };

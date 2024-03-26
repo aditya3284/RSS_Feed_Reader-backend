@@ -27,19 +27,21 @@ const generateAccessAndRefreshTokens = async (userID) => {
 
 const registerUser = async (req, res, next) => {
 	try {
-		const { error, value } = await validateRegistorRequest(req.body);
+		const { error, value } = validateRegistorRequest(req.body);
 
 		if (error) {
-			throw new APIError(HttpsStatusCode.BAD_REQUEST, error);
+			console.log("joi validation error");
+			throw new APIError(HttpsStatusCode.BAD_REQUEST, error.details.map((msg)=>msg.message));			
 		}
 
 		const { username, email, password } = value;
 
-		const existingUser = await User.find({
+		const existingUser = await User.findOne({
 			$or: [{ username }, { email }],
 		});
 
 		if (existingUser) {
+			console.log("user already exists");
 			throw new APIError(HttpsStatusCode.CONFLICT, 'User already exists');
 		}
 
@@ -69,7 +71,8 @@ const registerUser = async (req, res, next) => {
 				)
 			);
 	} catch (error) {
-		next(error);
+		console.log("register catch");
+		next(new APIError(error.httpStatusCode,error.message));
 	}
 };
 
