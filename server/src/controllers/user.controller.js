@@ -72,21 +72,21 @@ const registerUser = async (req, res, next) => {
 			);
 	} catch (error) {
 		console.log("register catch");
-		next(new APIError(error.httpStatusCode,error.message));
+		next(new APIError(error.httpStatusCode || 500,error.message || "registration failed!! Try again later "));
 	}
 };
 
 const loginUser = async (req, res, next) => {
 	try {
-		const { error, value } = await validateLoginRequest(req.body);
+		const { error, value } = validateLoginRequest(req.body);
 
 		if (error) {
-			throw new APIError(HttpsStatusCode.BAD_REQUEST, error);
+			throw new APIError(HttpsStatusCode.BAD_REQUEST, error.details.map((msg)=>msg.message));
 		}
 
 		const { email, password } = value;
 
-		const user = await User.findOne({ email });
+		const user = await User.findOne({ email }).select("+password");
 
 		if (!user) {
 			throw new APIError(HttpsStatusCode.NOT_FOUND, 'User does not exist');
@@ -123,7 +123,7 @@ const loginUser = async (req, res, next) => {
 				)
 			);
 	} catch (error) {
-		next(error);
+		next(new APIError(error.httpStatusCode || 500,error.message || "login process failed"));
 	}
 };
 export { registerUser, loginUser };
