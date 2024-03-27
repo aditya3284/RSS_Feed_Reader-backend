@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import { HttpsStatusCode } from '../constants.js';
 import { User } from '../models/user.model.js';
 import APIError from '../utils/errors.js';
@@ -169,4 +170,65 @@ const logOutUser = async (req, res, next) => {
 		);
 	}
 };
-export { registerUser, loginUser, logOutUser };
+
+const refreshAccessToken = async (req, res, next) => {
+	try {
+		const incomingRefreshToken = req.cookies?.refreshToken;
+		if (!incomingRefreshToken) {
+			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Unauthorized Request');
+		}
+
+		const tokenPayload = jwt.verify(
+			incomingRefreshToken,
+			process.env.REFRESH_TOKEN_JWT_SECRET,
+			{
+				algorithms: process.env.REFRESH_TOKEN_JWT_ALGORITHM,
+				ignoreExpiration: false,
+			}
+		);
+
+		const user = await User.findById(tokenPayload.userID).select(
+			'+refreshToken'
+		);
+
+		if (!user) {
+			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid refresh token');
+		}
+
+		if (incomingRefreshToken !== user.refreshToken) {
+			throw new APIError(
+				HttpsStatusCode.UNAUTHORIZED,
+				'Refresh token is invalid'
+			);
+		}
+
+		const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+			user._id
+		);
+
+		const cookieOptions = { httpOnly: true, secure: false, sameSite: 'strict' };
+
+		return res
+			.status(200)
+			.cookie('accessToken', accessToken, cookieOptions)
+			.cookie('refreshToken', refreshToken, cookieOptions)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{
+						access_Token: accessToken,
+						refresh_Token: refreshToken,
+					},
+					'Access Token refreshed Successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.UNAUTHORIZED,
+				error.message || 'Invalid Refresh Token'
+			)
+		);
+	}
+};
+export { registerUser, loginUser, logOutUser, refreshAccessToken };
