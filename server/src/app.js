@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import router from './routes/user.route.js';
-import {errorHandler} from './middlewares/errorHandler.middleware.js';
+import { errorHandler } from './middlewares/errorHandler.middleware.js';
 
 const app = express();
 const corsOptions = { origin: process.env.CORS_ORIGIN };

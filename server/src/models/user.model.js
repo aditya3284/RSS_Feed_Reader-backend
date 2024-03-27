@@ -118,16 +118,14 @@ userSchema.method('validatePasswordFromDb', async function (plainTextPassword) {
 });
 
 userSchema.method('generateAccessToken', async function () {
-	const username = await bcrypt.hash(this.username, 10);
-	return jwt.sign({"username":username}, process.env.ACCESS_TOKEN_JWT_SECRET, {
+	return jwt.sign({"Uid":this._id}, process.env.ACCESS_TOKEN_JWT_SECRET, {
 		algorithm: process.env.ACCESS_TOKEN_JWT_ALGORITHM,
 		expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
 	});
 });
 
 userSchema.method('generateRefreshToken', async function () {
-	const userId = await bcrypt.hash(this.id, 10);
-	return jwt.sign({"userID":userId}, process.env.REFRESH_TOKEN_JWT_SECRET, {
+	return jwt.sign({"userID":this.id}, process.env.REFRESH_TOKEN_JWT_SECRET, {
 		algorithm: process.env.REFRESH_TOKEN_JWT_ALGORITHM,
 		expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
 	});

@@ -30,8 +30,11 @@ const registerUser = async (req, res, next) => {
 		const { error, value } = validateRegistorRequest(req.body);
 
 		if (error) {
-			console.log("joi validation error");
-			throw new APIError(HttpsStatusCode.BAD_REQUEST, error.details.map((msg)=>msg.message));			
+			console.log('joi validation error');
+			throw new APIError(
+				HttpsStatusCode.BAD_REQUEST,
+				error.details.map((msg) => msg.message)
+			);
 		}
 
 		const { username, email, password } = value;
@@ -41,7 +44,7 @@ const registerUser = async (req, res, next) => {
 		});
 
 		if (existingUser) {
-			console.log("user already exists");
+			console.log('user already exists');
 			throw new APIError(HttpsStatusCode.CONFLICT, 'User already exists');
 		}
 
@@ -71,8 +74,13 @@ const registerUser = async (req, res, next) => {
 				)
 			);
 	} catch (error) {
-		console.log("register catch");
-		next(new APIError(error.httpStatusCode || 500,error.message || "registration failed!! Try again later "));
+		console.log('register catch');
+		next(
+			new APIError(
+				error.httpStatusCode || 500,
+				error.message || 'registration failed!! Try again later '
+			)
+		);
 	}
 };
 
@@ -81,12 +89,15 @@ const loginUser = async (req, res, next) => {
 		const { error, value } = validateLoginRequest(req.body);
 
 		if (error) {
-			throw new APIError(HttpsStatusCode.BAD_REQUEST, error.details.map((msg)=>msg.message));
+			throw new APIError(
+				HttpsStatusCode.BAD_REQUEST,
+				error.details.map((msg) => msg.message)
+			);
 		}
 
 		const { email, password } = value;
 
-		const user = await User.findOne({ email }).select("+password");
+		const user = await User.findOne({ email }).select('+password');
 
 		if (!user) {
 			throw new APIError(HttpsStatusCode.NOT_FOUND, 'User does not exist');
@@ -109,7 +120,7 @@ const loginUser = async (req, res, next) => {
 			'+_id, +username, +email +fullName.firstName'
 		);
 
-		const cookieOptions = { httpOnly: true, secure: true, sameSite: 'strict' };
+		const cookieOptions = { httpOnly: true, secure: false, sameSite: 'strict' };
 
 		return res
 			.status(200)
@@ -123,7 +134,39 @@ const loginUser = async (req, res, next) => {
 				)
 			);
 	} catch (error) {
-		next(new APIError(error.httpStatusCode || 500,error.message || "login process failed"));
+		next(
+			new APIError(
+				error.httpStatusCode || 500,
+				error.message || 'login process failed'
+			)
+		);
 	}
 };
-export { registerUser, loginUser };
+
+const logOutUser = async (req, res, next) => {
+	try {
+		await User.findByIdAndUpdate(
+			req.userID,
+			{
+				$unset: { refreshToken: 1 },
+			},
+			{ new: true }
+		);
+		const cookieOptions = { httpOnly: true, secure: false, sameSite: 'strict' };
+		return res
+			.status(200)
+			.clearCookie('accessToken', cookieOptions)
+			.clearCookie('refreshToken', cookieOptions)
+			.json(
+				new APIResponse(HttpsStatusCode.OK, {}, 'User Logged out Successfully')
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || 403,
+				error.message || 'Access denied'
+			)
+		);
+	}
+};
+export { registerUser, loginUser, logOutUser };
