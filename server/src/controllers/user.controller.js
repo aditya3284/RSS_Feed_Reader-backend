@@ -286,10 +286,40 @@ const changeUserPassword = async (req, res, next) => {
 		);
 	}
 };
+
+const getUserProfileDetails = async (req, res, next) => {
+	try {
+		const userID = req.userID;
+
+		if (!userID) {
+			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
+		}
+		const user = await User.findById(userID).select(
+			'+coverImage +profilePicture +age +gender +fullName'
+		);
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ ...user._doc },
+					'User profile data retrieved successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.UNAUTHORIZED,
+				error.message || 'Unauthorized user request'
+			)
+		);
+	}
+};
 export {
 	changeUserPassword,
 	registerUser,
 	loginUser,
 	logOutUser,
 	refreshAccessToken,
+	getUserProfileDetails,
 };
