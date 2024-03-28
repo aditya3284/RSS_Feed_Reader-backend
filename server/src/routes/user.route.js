@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+	changeUserPassword,
 	logOutUser,
 	loginUser,
 	refreshAccessToken,
@@ -14,5 +15,6 @@ router.route('/signup').post(registerUser);
 router.route('/login').post(loginUser);
 router.route('/logout').post(verifyAccess, logOutUser);
 router.route('/refresh-token').post(verifyAccess, refreshAccessToken);
+router.route('/profile/password').patch(verifyAccess, changeUserPassword);
 
 export default router;

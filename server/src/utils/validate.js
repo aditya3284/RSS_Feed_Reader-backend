@@ -22,11 +22,23 @@ const loginRequestSchema = Joi.object({
 	password: Joi.string().alphanum().min(8).max(48).required(),
 });
 
+const changeUserPasswordSchema = Joi.object({
+	oldPassword: Joi.string().alphanum().min(8).max(48).required(),
+	newPassword: Joi.string().alphanum().min(8).max(48).required(),
+});
+
 const validateRegistorRequest = (value) => {
-return registerRequestSchema.validate(value, { abortEarly: false });
+	return registerRequestSchema.validate(value, { abortEarly: false });
 };
 
-const validateLoginRequest =  (value) => {
- return loginRequestSchema.validate(value, { abortEarly: false });
+const validateLoginRequest = (value) => {
+	return loginRequestSchema.validate(value, { abortEarly: false });
 };
-export { validateRegistorRequest, validateLoginRequest };
+const validateUserPasswordChangeRequest = (value) => {
+	return changeUserPasswordSchema.validate(value, { abortEarly: false });
+};
+export {
+	validateRegistorRequest,
+	validateLoginRequest,
+	validateUserPasswordChangeRequest,
+};

@@ -6,6 +6,7 @@ import APIResponse from '../utils/response.js';
 import {
 	validateLoginRequest,
 	validateRegistorRequest,
+	validateUserPasswordChangeRequest,
 } from '../utils/validate.js';
 
 const generateAccessAndRefreshTokens = async (userID) => {
@@ -31,7 +32,6 @@ const registerUser = async (req, res, next) => {
 		const { error, value } = validateRegistorRequest(req.body);
 
 		if (error) {
-			console.log('joi validation error');
 			throw new APIError(
 				HttpsStatusCode.BAD_REQUEST,
 				error.details.map((msg) => msg.message)
@@ -45,7 +45,6 @@ const registerUser = async (req, res, next) => {
 		});
 
 		if (existingUser) {
-			console.log('user already exists');
 			throw new APIError(HttpsStatusCode.CONFLICT, 'User already exists');
 		}
 
@@ -75,7 +74,6 @@ const registerUser = async (req, res, next) => {
 				)
 			);
 	} catch (error) {
-		console.log('register catch');
 		next(
 			new APIError(
 				error.httpStatusCode || 500,
@@ -231,4 +229,67 @@ const refreshAccessToken = async (req, res, next) => {
 		);
 	}
 };
-export { registerUser, loginUser, logOutUser, refreshAccessToken };
+
+const changeUserPassword = async (req, res, next) => {
+	try {
+		const { error, value } = validateUserPasswordChangeRequest(req.body);
+
+		if (error) {
+			throw new APIError(
+				HttpsStatusCode.BAD_REQUEST,
+				error.details.map((msg) => msg.message)
+			);
+		}
+
+		const { oldPassword, newPassword } = value;
+		const userID = req.userID;
+
+		const user = await User.findById(userID).select('+password');
+		const oldPasswordFromDb = user.password;
+
+		const isOldPasswordCorrect = await user.validatePasswordFromDb(oldPassword);
+
+		if (!isOldPasswordCorrect) {
+			throw new APIError(
+				HttpsStatusCode.UNAUTHORIZED,
+				'Invalid User Credentials'
+			);
+		}
+
+		user.password = newPassword;
+		await user.save({ validateModifiedOnly: true });
+
+		const updatedUser = await User.findById(userID).select('+password');
+
+		if (updatedUser.password === oldPasswordFromDb) {
+			throw new APIError(
+				HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				'Failed to fulfil your request. Try again later'
+			);
+		}
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{},
+					'User credential modification request completed successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.BAD_REQUEST,
+				error.message || 'Invalid User Input'
+			)
+		);
+	}
+};
+export {
+	changeUserPassword,
+	registerUser,
+	loginUser,
+	logOutUser,
+	refreshAccessToken,
+};
