@@ -405,6 +405,43 @@ const updateUserProfileDetails = async (req, res, next) => {
 	}
 };
 
+const deleteUserProfile = async (req, res, next) => {
+	try {
+		const userID = req.userID;
+		if (!userID) {
+			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
+		}
+		const deletedUser = await User.findByIdAndDelete(userID).select(
+			'+coverImage +profilePicture +age +gender +fullName'
+		);
+
+		const cookieOptions = {
+			httpOnly: true,
+			secure: false,
+			sameSite: 'strict',
+		};
+
+		return res
+			.status(200)
+			.clearCookie('refreshToken', cookieOptions)
+			.clearCookie('accessToken', cookieOptions)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ deletedUser },
+					'User profile removed successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.UNAUTHORIZED,
+				error.message || 'Unauthorized user request'
+			)
+		);
+	}
+};
+
 export {
 	changeUserPassword,
 	registerUser,
@@ -414,4 +451,5 @@ export {
 	getUserProfileDetails,
 	registerUserProfileDetails,
 	updateUserProfileDetails,
+	deleteUserProfile,
 };

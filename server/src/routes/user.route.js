@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
 	changeUserPassword,
+	deleteUserProfile,
 	getUserProfileDetails,
 	logOutUser,
 	loginUser,
@@ -23,6 +24,7 @@ router
 	.route('/profile')
 	.get(verifyAccess, getUserProfileDetails)
 	.post(verifyAccess, registerUserProfileDetails)
-	.patch(verifyAccess, updateUserProfileDetails);
+	.patch(verifyAccess, updateUserProfileDetails)
+	.delete(verifyAccess, deleteUserProfile);
 
 export default router;
