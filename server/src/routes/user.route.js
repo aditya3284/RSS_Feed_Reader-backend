@@ -6,6 +6,7 @@ import {
 	loginUser,
 	refreshAccessToken,
 	registerUser,
+	registerUserProfileDetails,
 } from '../controllers/user.controller.js';
 import { verifyAccess } from '../middlewares/authentication.middleware.js';
 
@@ -17,6 +18,9 @@ router.route('/login').post(loginUser);
 router.route('/logout').post(verifyAccess, logOutUser);
 router.route('/refresh-token').post(verifyAccess, refreshAccessToken);
 router.route('/profile/password').patch(verifyAccess, changeUserPassword);
-router.route('/profile').get(verifyAccess, getUserProfileDetails);
+router
+	.route('/profile')
+	.get(verifyAccess, getUserProfileDetails)
+	.post(verifyAccess, registerUserProfileDetails);
 
 export default router;

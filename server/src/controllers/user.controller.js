@@ -7,6 +7,7 @@ import {
 	validateLoginRequest,
 	validateRegistorRequest,
 	validateUserPasswordChangeRequest,
+	validateUserProfileDetails,
 } from '../utils/validate.js';
 
 const generateAccessAndRefreshTokens = async (userID) => {
@@ -315,6 +316,52 @@ const getUserProfileDetails = async (req, res, next) => {
 		);
 	}
 };
+
+const registerUserProfileDetails = async (req, res, next) => {
+	try {
+		const { error, value } = validateUserProfileDetails(req.body);
+		if (error) {
+			throw new APIError(
+				HttpsStatusCode.BAD_REQUEST,
+				error.details.map((err) => err.message)
+			);
+		}
+
+		const userId = req.userID;
+		const { fullName, gender, age } = value;
+
+		const user = await User.findByIdAndUpdate(
+			userId,
+			{
+				$set: { fullName, gender, age },
+			},
+			{ new: true, runValidators: true }
+		).select('+fullName +gender +age');
+
+		if (!user) {
+			throw new APIError(HttpsStatusCode.NOT_FOUND, 'User not found');
+		}
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ user },
+					'User Profile details registred successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.BAD_REQUEST,
+				error.message ||
+					'Failed to register user details. Please try again later.'
+			)
+		);
+	}
+};
+
 export {
 	changeUserPassword,
 	registerUser,
@@ -322,4 +369,5 @@ export {
 	logOutUser,
 	refreshAccessToken,
 	getUserProfileDetails,
+	registerUserProfileDetails,
 };

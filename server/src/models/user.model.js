@@ -3,21 +3,27 @@ import { emailRegex } from '../constants.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-const nameSchema = new Schema({
-	firstName: {
-		type: String,
-		minLength: [2, 'first name must be at least 2 characters, got {VALUE}'],
-		trim: true,
+const nameSchema = new Schema(
+	{
+		firstName: {
+			type: String,
+			required: [true, 'first name is required'],
+			minLength: [2, 'first name must be at least 2 characters, got {VALUE}'],
+			trim: true,
+		},
+		middleName: {
+			type: String,
+			trim: true,
+		},
+		lastName: {
+			type: String,
+			required: [true, 'last name is required'],
+			minLength: [2, 'last name must be at least 2 characters, got {VALUE}'],
+			trim: true,
+		},
 	},
-	middleName: {
-		type: String,
-		trim: true,
-	},
-	lastName: {
-		type: String,
-		minLength: [2, 'last name must be at least 2 characters, got {VALUE}'],
-	},
-});
+	{ _id: false, timestamps: false, minimize: true }
+);
 
 const userSchema = new Schema(
 	{
@@ -43,7 +49,9 @@ const userSchema = new Schema(
 			match: [emailRegex, 'expects a valid email address, got {VALUE}'],
 			select: true,
 		},
-		fullName: { nameSchema },
+		fullName: {
+			type: nameSchema,
+		},
 		gender: {
 			type: String,
 			enum: {
@@ -118,14 +126,14 @@ userSchema.method('validatePasswordFromDb', async function (plainTextPassword) {
 });
 
 userSchema.method('generateAccessToken', async function () {
-	return jwt.sign({"Uid":this._id}, process.env.ACCESS_TOKEN_JWT_SECRET, {
+	return jwt.sign({ Uid: this._id }, process.env.ACCESS_TOKEN_JWT_SECRET, {
 		algorithm: process.env.ACCESS_TOKEN_JWT_ALGORITHM,
 		expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
 	});
 });
 
 userSchema.method('generateRefreshToken', async function () {
-	return jwt.sign({"userID":this.id}, process.env.REFRESH_TOKEN_JWT_SECRET, {
+	return jwt.sign({ userID: this.id }, process.env.REFRESH_TOKEN_JWT_SECRET, {
 		algorithm: process.env.REFRESH_TOKEN_JWT_ALGORITHM,
 		expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
 	});
