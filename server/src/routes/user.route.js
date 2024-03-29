@@ -7,6 +7,7 @@ import {
 	refreshAccessToken,
 	registerUser,
 	registerUserProfileDetails,
+	updateUserProfileDetails,
 } from '../controllers/user.controller.js';
 import { verifyAccess } from '../middlewares/authentication.middleware.js';
 
@@ -21,6 +22,7 @@ router.route('/profile/password').patch(verifyAccess, changeUserPassword);
 router
 	.route('/profile')
 	.get(verifyAccess, getUserProfileDetails)
-	.post(verifyAccess, registerUserProfileDetails);
+	.post(verifyAccess, registerUserProfileDetails)
+	.patch(verifyAccess, updateUserProfileDetails);
 
 export default router;

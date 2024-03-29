@@ -362,6 +362,49 @@ const registerUserProfileDetails = async (req, res, next) => {
 	}
 };
 
+const updateUserProfileDetails = async (req, res, next) => {
+	try {
+		const { error, value } = validateUserProfileDetails(req.body);
+		if (error) {
+			throw new APIError(
+				HttpsStatusCode.BAD_REQUEST,
+				error.details.map((err) => err.message)
+			);
+		}
+
+		const userId = req.userID;
+		const user = await User.findByIdAndUpdate(
+			userId,
+			{
+				$set: value,
+			},
+			{ new: true, runValidators: true }
+		).select('+fullName +gender +age');
+
+		if (!user) {
+			throw new APIError(HttpsStatusCode.NOT_FOUND, 'User not found');
+		}
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ user },
+					'User Profile details updated successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.BAD_REQUEST,
+				error.message ||
+					'Failed to update user details. Please try again later.'
+			)
+		);
+	}
+};
+
 export {
 	changeUserPassword,
 	registerUser,
@@ -370,4 +413,5 @@ export {
 	refreshAccessToken,
 	getUserProfileDetails,
 	registerUserProfileDetails,
+	updateUserProfileDetails,
 };
