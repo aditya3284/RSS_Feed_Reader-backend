@@ -536,8 +536,60 @@ const updateProfilePicture = async (req, res, next) => {
 	}
 };
 
+const deleteProfilePicture = async (req, res, next) => {
+	try {
+		const userID = req.userID;
+
+		if (!userID) {
+			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
+		}
+
+		const user = await User.findById(userID).select(
+			'-password -refreshToken -watchHistory -readHistory -email +profilePicture'
+		);
+
+		const updatedUser = await User.findByIdAndUpdate(
+			userID,
+			{
+				$set: {
+					profilePicture: {
+						image_id: null,
+						format: null,
+						URL: '',
+					},
+				},
+			},
+			{ new: true }
+		).select(
+			'-password -refreshToken -watchHistory -readHistory -email +profilePicture'
+		);
+
+		if (updatedUser.profilePicture.image_id === null) {
+			await removeImageFromCloudinary(user.profilePicture.image_id);
+		}
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ profilePicture: updatedUser.profilePicture },
+					'User profile picture removed successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				error.message || 'Failed to complete the request, try after sometime'
+			)
+		);
+	}
+};
+
 export {
 	changeUserPassword,
+	deleteProfilePicture,
 	deleteUserProfile,
 	getProfilePicture,
 	getUserProfileDetails,

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
 	changeUserPassword,
+	deleteProfilePicture,
 	deleteUserProfile,
 	getProfilePicture,
 	getUserProfileDetails,
@@ -36,6 +37,7 @@ router
 		verifyAccess,
 		upload.single('profilePictureToUpdate'),
 		updateProfilePicture
-	);
+	)
+	.delete(verifyAccess, deleteProfilePicture);
 
 export default router;
