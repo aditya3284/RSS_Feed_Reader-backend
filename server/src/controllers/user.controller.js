@@ -9,6 +9,10 @@ import {
 	validateUserPasswordChangeRequest,
 	validateUserProfileDetails,
 } from '../utils/validate.js';
+import {
+	uploadImageToCloudinary,
+	removeImageFromCloudinary,
+} from '../utils/cloudinary.js';
 
 const generateAccessAndRefreshTokens = async (userID) => {
 	try {
@@ -471,6 +475,67 @@ const getProfilePicture = async (req, res, next) => {
 	}
 };
 
+const updateProfilePicture = async (req, res, next) => {
+	try {
+		const userID = req.userID;
+		const profilePicture = req.file?.path;
+
+		if (!userID) {
+			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
+		}
+
+		const user = await User.findById(userID).select(
+			'-password -refreshToken -watchHistory -readHistory -email +profilePicture'
+		);
+
+		const uploadedImage = await uploadImageToCloudinary(profilePicture);
+
+		if (uploadedImage instanceof Error) {
+			throw new APIError(
+				HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				'Failed to update the image, try after sometime'
+			);
+		}
+
+		const updatedUser = await User.findByIdAndUpdate(
+			userID,
+			{
+				$set: {
+					profilePicture: {
+						image_id: uploadedImage.public_id,
+						format: uploadedImage.format,
+						URL: uploadedImage.url,
+					},
+				},
+			},
+			{ new: true, runValidators: true }
+		).select(
+			'-password -refreshToken -watchHistory -readHistory -email +profilePicture'
+		);
+
+		if (updatedUser.profilePicture.URL === uploadedImage.url) {
+			await removeImageFromCloudinary(user.profilePicture.image_id);
+		}
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ profilePicture: updatedUser.profilePicture },
+					'User profile picture updated successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				error.message || 'Failed to fulfil the request, try agian later'
+			)
+		);
+	}
+};
+
 export {
 	changeUserPassword,
 	deleteUserProfile,
@@ -481,5 +546,6 @@ export {
 	refreshAccessToken,
 	registerUser,
 	registerUserProfileDetails,
+	updateProfilePicture,
 	updateUserProfileDetails,
 };

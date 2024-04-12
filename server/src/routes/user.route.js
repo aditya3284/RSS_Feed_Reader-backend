@@ -9,9 +9,11 @@ import {
 	refreshAccessToken,
 	registerUser,
 	registerUserProfileDetails,
+	updateProfilePicture,
 	updateUserProfileDetails,
 } from '../controllers/user.controller.js';
 import { verifyAccess } from '../middlewares/authentication.middleware.js';
+import upload from '../middlewares/multer.middlerware.js';
 
 const routerOptions = { caseSensitive: false, strict: false };
 const router = Router(routerOptions);
@@ -27,6 +29,13 @@ router
 	.post(verifyAccess, registerUserProfileDetails)
 	.patch(verifyAccess, updateUserProfileDetails)
 	.delete(verifyAccess, deleteUserProfile);
-router.route('/profile/picture').get(verifyAccess, getProfilePicture);
+router
+	.route('/profile/picture')
+	.get(verifyAccess, getProfilePicture)
+	.patch(
+		verifyAccess,
+		upload.single('profilePictureToUpdate'),
+		updateProfilePicture
+	);
 
 export default router;
