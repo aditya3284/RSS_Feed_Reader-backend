@@ -442,14 +442,44 @@ const deleteUserProfile = async (req, res, next) => {
 	}
 };
 
+const getProfilePicture = async (req, res, next) => {
+	try {
+		const userID = req.userID;
+
+		if (!userID) {
+			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
+		}
+		const user = await User.findById(userID).select(
+			'+profilePicture +fullName -email -createdAt -updatedAt'
+		);
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ profilePicture: user.profilePicture },
+					'User profile picture retrieved successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.UNAUTHORIZED,
+				error.message || 'Unauthorized user request'
+			)
+		);
+	}
+};
+
 export {
 	changeUserPassword,
-	registerUser,
-	loginUser,
-	logOutUser,
-	refreshAccessToken,
+	deleteUserProfile,
+	getProfilePicture,
 	getUserProfileDetails,
+	logOutUser,
+	loginUser,
+	refreshAccessToken,
+	registerUser,
 	registerUserProfileDetails,
 	updateUserProfileDetails,
-	deleteUserProfile,
 };

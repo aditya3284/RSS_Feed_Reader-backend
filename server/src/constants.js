@@ -11,6 +11,18 @@ export const HttpsStatusCode = {
 	INTERNAL_SERVER_ERROR: 500,
 };
 
+export const allowedImageFormats = [
+	'webp',
+	'jpeg',
+	'jpg',
+	'pjp',
+	'pjpeg',
+	'jfif',
+	'png',
+	'bmp',
+	'ico',
+];
+
 export const emailRegex = /^\w+([.+-]?\w+)*@\w+([.-]?\w+)*(.\w{2,6})+$/;
 
 // escaped backslash used in the below regex, due to warning by single backslash

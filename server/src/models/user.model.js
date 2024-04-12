@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { emailRegex } from '../constants.js';
+import { allowedImageFormats, emailRegex } from '../constants.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -25,6 +25,38 @@ const nameSchema = new Schema(
 	{ _id: false, timestamps: false, minimize: true }
 );
 
+const imageSchema = new Schema(
+	{
+		image_id: {
+			type: String,
+			required: [true, 'image-ID is required'],
+			unique: [true, 'image-ID must be unique'],
+			select: true,
+		},
+		format: {
+			type: String,
+			enum: {
+				values: allowedImageFormats,
+				message: `{VALUE} is not supported`,
+			},
+			required: [true, 'image-format is required'],
+			select: true,
+		},
+		URL: {
+			type: String,
+			required: [true, 'image-url is required'],
+			trim: true,
+			unique: true,
+			select: true,
+		},
+	},
+	{
+		_id: false,
+		timestamps: false,
+		minimize: true,
+	}
+);
+
 const userSchema = new Schema(
 	{
 		username: {
@@ -39,6 +71,7 @@ const userSchema = new Schema(
 				32,
 				"username can't exceed length of 32 characters, got {VALUE}",
 			],
+			select: true,
 		},
 		email: {
 			type: String,
@@ -51,6 +84,7 @@ const userSchema = new Schema(
 		},
 		fullName: {
 			type: nameSchema,
+			select: false,
 		},
 		gender: {
 			type: String,
@@ -68,11 +102,11 @@ const userSchema = new Schema(
 			select: false,
 		},
 		profilePicture: {
-			type: String,
+			type: imageSchema,
 			select: false,
 		},
 		coverImage: {
-			type: String,
+			type: imageSchema,
 			select: false,
 		},
 		password: {
