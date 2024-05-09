@@ -64,4 +64,4 @@ const youTubeVideoSchema = new Schema(
 	{ timestamps: true, minimize: true }
 );
 
-export const YouTubeVideo = model('YouTubeVideo', youTubeVideoSchema);
+export const YouTubeVideo = model('YoutubeVideo', youTubeVideoSchema);

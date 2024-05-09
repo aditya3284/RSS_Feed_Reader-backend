@@ -5,12 +5,14 @@ const feedSchema = new Schema(
 		name: {
 			type: String,
 			required: [true, 'feed name is required'],
+			unique: true,
 			index: true,
 			trim: true,
 		},
 		description: {
 			type: String,
 			trim: true,
+			default: null,
 		},
 		url: {
 			type: String,

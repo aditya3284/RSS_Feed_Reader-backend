@@ -122,7 +122,7 @@ const userSchema = new Schema(
 		watchHistory: [
 			{
 				type: Schema.Types.ObjectId,
-				ref: 'YT_Video',
+				ref: 'YoutubeVideo',
 				default: undefined,
 				select: false,
 			},
@@ -130,7 +130,7 @@ const userSchema = new Schema(
 		readHistory: [
 			{
 				type: Schema.Types.ObjectId,
-				ref: 'Feed_Item',
+				ref: 'feedItem',
 				default: undefined,
 				select: false,
 			},

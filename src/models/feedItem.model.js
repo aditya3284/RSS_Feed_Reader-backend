@@ -43,7 +43,6 @@ const feedItemSchema = new Schema(
 		readBy: {
 			type: Schema.Types.ObjectId,
 			ref: 'User',
-			required: [true, 'reader information is required'],
 		},
 	},
 	{ timestamps: true, minimize: true }
