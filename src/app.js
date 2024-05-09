@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/user.route.js';
+import feedRouter from './routes/feed.route.js';
 import { errorHandler } from './middlewares/errorHandler.middleware.js';
 
 const app = express();
@@ -17,5 +18,6 @@ app.use(express.urlencoded(urlencodedOptions));
 app.use(express.json(jsonOptions));
 
 app.use('/api/v1/user', userRouter);
+app.use('/api/v1/feed', feedRouter);
 app.use(errorHandler);
 export default app;

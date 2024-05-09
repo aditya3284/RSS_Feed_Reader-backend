@@ -39,6 +39,13 @@ const userProfileDetailsSchema = Joi.object({
 	age: Joi.number().integer().min(5).max(125).positive(),
 });
 
+const feedInfoSchema = Joi.object({
+	name: Joi.string().trim(true),
+	iconUrl: Joi.string().trim(true),
+	textDirection: Joi.string().valid('ltr', 'rtl').trim(true),
+	favorite: Joi.boolean(),
+});
+
 const validateRegistorRequest = (value) => {
 	return registerRequestSchema.validate(value, { abortEarly: false });
 };
@@ -55,9 +62,14 @@ const validateUserProfileDetails = (value) => {
 	return userProfileDetailsSchema.validate(value, { abortEarly: false });
 };
 
+const validateFeedInfo = (value) => {
+	return feedInfoSchema.validate(value, { abortEarly: false });
+};
+
 export {
-	validateRegistorRequest,
+	validateFeedInfo,
 	validateLoginRequest,
+	validateRegistorRequest,
 	validateUserPasswordChangeRequest,
 	validateUserProfileDetails,
 };
