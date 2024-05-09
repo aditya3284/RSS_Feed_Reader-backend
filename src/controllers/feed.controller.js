@@ -92,4 +92,44 @@ const updateUserFeed = async (req, res, next) => {
 	}
 };
 
-export { retrieveUserFeeds, updateUserFeed };
+const getFeed = async (req, res, next) => {
+	try {
+		const userId = String(req.userID);
+		const { feedName } = req.params;
+
+		const feed = await Feed.aggregate()
+			.match({
+				$and: [
+					{ name: feedName },
+					{ addedBy: new mongoose.Types.ObjectId(userId) },
+				],
+			})
+			.lookup({
+				from: 'feeditems',
+				localField: '_id',
+				foreignField: 'sourceFeed',
+				as: 'items',
+			})
+			.project({ name: 1, items: 1, favorite: 1, iconUrl: 1, url: 1 });
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ ...feed[0] },
+					feed.length !== 0
+						? 'Requested Feed Retieved Successfully'
+						: "Requested Feed Doesn't Exist"
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				error.message || 'Failed to complete the request, try after sometime'
+			)
+		);
+	}
+};
+
+export { getFeed, retrieveUserFeeds, updateUserFeed };
