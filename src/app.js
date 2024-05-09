@@ -2,7 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import router from './routes/user.route.js';
+import userRouter from './routes/user.route.js';
 import { errorHandler } from './middlewares/errorHandler.middleware.js';
 
 const app = express();
@@ -16,6 +16,6 @@ app.use(cookieParser());
 app.use(express.urlencoded(urlencodedOptions));
 app.use(express.json(jsonOptions));
 
-app.use('/api/v1', router);
+app.use('/api/v1/user', userRouter);
 app.use(errorHandler);
 export default app;

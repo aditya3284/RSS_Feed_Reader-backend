@@ -4,6 +4,7 @@ import {
 	deleteProfilePicture,
 	deleteUserProfile,
 	getProfilePicture,
+	getReadHistory,
 	getUserProfileDetails,
 	logOutUser,
 	loginUser,
@@ -39,5 +40,6 @@ router
 		updateProfilePicture
 	)
 	.delete(verifyAccess, deleteProfilePicture);
+router.route('/history/read').get(verifyAccess, getReadHistory);
 
 export default router;

@@ -13,6 +13,7 @@ import {
 	uploadImageToCloudinary,
 	removeImageFromCloudinary,
 } from '../utils/cloudinary.js';
+import mongoose from 'mongoose';
 
 const generateAccessAndRefreshTokens = async (userID) => {
 	try {
@@ -196,6 +197,7 @@ const refreshAccessToken = async (req, res, next) => {
 
 		if (!user) {
 			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid refresh token');
+			//logout user
 		}
 
 		if (incomingRefreshToken !== user.refreshToken) {
@@ -587,11 +589,44 @@ const deleteProfilePicture = async (req, res, next) => {
 	}
 };
 
+const getReadHistory = async (req, res, next) => {
+	try {
+		const userID = String(req.userID);
+		const user = await User.aggregate()
+			.match({ _id: new mongoose.Types.ObjectId(userID) })
+			.lookup({
+				from: 'feeditems',
+				localField: '_id',
+				foreignField: 'readBy',
+				as: 'readHistory',
+			})
+			.project({ fullName: 1, readHistory: 1 });
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ ...user[0] },
+					'User profile picture retrieved successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.UNAUTHORIZED,
+				error.message || 'Unauthorized user request'
+			)
+		);
+	}
+};
+
 export {
 	changeUserPassword,
 	deleteProfilePicture,
 	deleteUserProfile,
 	getProfilePicture,
+	getReadHistory,
 	getUserProfileDetails,
 	logOutUser,
 	loginUser,
