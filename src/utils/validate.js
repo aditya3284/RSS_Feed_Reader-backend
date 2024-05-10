@@ -48,6 +48,8 @@ const feedInfoSchema = Joi.object({
 
 const feedURLSchema = Joi.object({ feedURL: Joi.string().trim(true) });
 
+const feedItemInfoSchema = Joi.object({ hasRead: Joi.boolean() });
+
 const validateRegistorRequest = (value) => {
 	return registerRequestSchema.validate(value, { abortEarly: false });
 };
@@ -72,8 +74,13 @@ const validateFeedURL = (value) => {
 	return feedURLSchema.validate(value, { abortEarly: false });
 };
 
+const validateFeedItemInfo = (value) => {
+	return feedItemInfoSchema.validate(value, { abortEarly: false });
+};
+
 export {
 	validateFeedInfo,
+	validateFeedItemInfo,
 	validateLoginRequest,
 	validateRegistorRequest,
 	validateUserPasswordChangeRequest,
