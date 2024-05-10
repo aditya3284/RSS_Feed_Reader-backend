@@ -6,6 +6,8 @@ import { User } from '../models/user.model.js';
 import { Feed } from '../models/feed.model.js';
 import { validateFeedInfo, validateFeedURL } from '../utils/validate.js';
 import { SaveFeedItemInDatabase, fetchFeed, parseFeed } from '../utils/feed.js';
+import { feedItem } from '../models/feedItem.model.js';
+import { deleteFeedItemsFromDatabase } from '../utils/feedItem.js';
 
 const retrieveUserFeeds = async (req, res, next) => {
 	try {
@@ -191,4 +193,43 @@ const createFeed = async (req, res, next) => {
 	}
 };
 
-export { createFeed, getFeed, retrieveUserFeeds, updateUserFeed };
+const deleteFeed = async (req, res, next) => {
+	try {
+		const { feedName } = req.params;
+
+		const deletedFeed = await Feed.findOneAndDelete({
+			$and: [{ name: feedName }, { addedBy: req.userID }],
+		}).select('+name +url +iconUrl +description +addedBy +favorite');
+
+		const feedItemsToDelete = await feedItem.find({
+			sourceFeed: deletedFeed?._id,
+		});
+
+		await deleteFeedItemsFromDatabase(feedItemsToDelete);
+
+		if (!deletedFeed) {
+			throw new APIError(
+				HttpsStatusCode.BAD_REQUEST,
+				"Either this feed doesn't exist already or you provided a invalid feed information !! Try agian Later"
+			);
+		}
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ ...deletedFeed?._doc },
+					'Feed removed successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				error.message || 'Failed user request!! Try after sometime'
+			)
+		);
+	}
+};
+
+export { createFeed, deleteFeed, getFeed, retrieveUserFeeds, updateUserFeed };

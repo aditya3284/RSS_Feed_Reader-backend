@@ -24,4 +24,28 @@ const setValuesToFeedItem = async (feedItemJSONObject, sourceFeedID) => {
 	}
 };
 
-export { setValuesToFeedItem };
+const deleteFeedItem = async (Item) => {
+	try {
+		return await feedItem
+			.findByIdAndDelete(Item._id)
+			.select('+_id +sourceFeed +title');
+	} catch (error) {
+		throw new Error(error.message || 'Feed Item deletion failed');
+	}
+};
+
+const deleteFeedItemsFromDatabase = async (feedItems) => {
+	try {
+		const deleteFeedItems = feedItems.map(async (element) => {
+			await deleteFeedItem(element);
+		});
+
+		await Promise.all(deleteFeedItems);
+	} catch (error) {
+		throw new Error(
+			error.message || 'failed to delete all feed items from database'
+		);
+	}
+};
+
+export { deleteFeedItemsFromDatabase, setValuesToFeedItem };
