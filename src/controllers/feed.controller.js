@@ -4,7 +4,8 @@ import mongoose from 'mongoose';
 import { HttpsStatusCode } from '../constants.js';
 import { User } from '../models/user.model.js';
 import { Feed } from '../models/feed.model.js';
-import { validateFeedInfo } from '../utils/validate.js';
+import { validateFeedInfo, validateFeedURL } from '../utils/validate.js';
+import { SaveFeedItemInDatabase, fetchFeed, parseFeed } from '../utils/feed.js';
 
 const retrieveUserFeeds = async (req, res, next) => {
 	try {
@@ -132,4 +133,62 @@ const getFeed = async (req, res, next) => {
 	}
 };
 
-export { getFeed, retrieveUserFeeds, updateUserFeed };
+const createFeed = async (req, res, next) => {
+	try {
+		const { error, value } = validateFeedURL(req.body);
+
+		if (error) {
+			throw new APIError(
+				HttpsStatusCode.BAD_REQUEST,
+				error.details.map((msg) => msg.message)
+			);
+		}
+		const feedURL = value.feedURL;
+		const existingFeed = await Feed.findOne({ url: feedURL });
+
+		if (existingFeed) {
+			throw new APIError(HttpsStatusCode.CONFLICT, 'Feed already exists');
+		}
+
+		const feedResponse = await fetchFeed(feedURL);
+		const parsedFeed = await parseFeed(feedResponse);
+		const feed = await Feed.create({
+			name: parsedFeed.feed.author[0].name[0],
+			url: parsedFeed.feed.author[0].uri[0],
+			lastFetched: new Date(),
+			addedBy: req.userID,
+		});
+
+		await SaveFeedItemInDatabase(parsedFeed, feed._id);
+
+		const newlyCreatedUser = await Feed.findById(feed._id).select(
+			'+_id +name +url'
+		);
+
+		if (!newlyCreatedUser) {
+			throw new APIError(
+				HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				"Server isn't able to parse and store the feed right now. Try again after sometime"
+			);
+		}
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ ...feed?._doc },
+					'Feed Added successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				error.message || 'Submition failed!! Try again later '
+			)
+		);
+	}
+};
+
+export { createFeed, getFeed, retrieveUserFeeds, updateUserFeed };
