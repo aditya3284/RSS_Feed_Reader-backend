@@ -23,6 +23,7 @@ const uploadImageToCloudinary = async (localImagePath) => {
 			localImagePath,
 			imageUploadOptions
 		);
+
 		return upload;
 	} catch (error) {
 		return new Error(error.message || 'Image upload failed!! Try again later');
@@ -45,4 +46,4 @@ const removeImageFromCloudinary = async (publicId) => {
 	}
 };
 
-export { uploadImageToCloudinary, removeImageFromCloudinary };
+export { removeImageFromCloudinary, uploadImageToCloudinary };

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import APIError from '../utils/errors.js';
 import { HttpsStatusCode } from '../constants.js';
+import APIError from '../utils/errors.js';
 
 const verifyAccess = (req, _res, next) => {
 	try {
