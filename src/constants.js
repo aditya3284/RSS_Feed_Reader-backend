@@ -23,7 +23,7 @@ export const allowedImageFormats = [
 	'ico',
 ];
 
-export const emailRegex = /^\w+([.+-]?\w+)*@\w+([.-]?\w+)*(.\w{2,6})+$/;
+export const emailRegex = /^\w+([.+-]?\w+)+@\w+([.-]?\w+)+\.(\w{2,6})$/;
 
 // escaped backslash used in the below regex, due to warning by single backslash
-// export const emailRegex = new RegExp('^\\w+([.+-]?\\w+)*@\\w+([.-]?\\w+)*(.\\w{2,6})+$');
+// export const emailRegex = new RegExp('^\\w+([\.+\-]?\\w+)+@\\w+([\.\-]?\\w+)+\\.(\\w{2,6})$');
