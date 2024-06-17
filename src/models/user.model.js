@@ -1,61 +1,7 @@
-import { Schema, model } from 'mongoose';
-import { allowedImageFormats, emailRegex } from '../constants.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
-const nameSchema = new Schema(
-	{
-		firstName: {
-			type: String,
-			required: [true, 'first name is required'],
-			minLength: [2, 'first name must be at least 2 characters, got {VALUE}'],
-			trim: true,
-		},
-		middleName: {
-			type: String,
-			trim: true,
-		},
-		lastName: {
-			type: String,
-			required: [true, 'last name is required'],
-			minLength: [2, 'last name must be at least 2 characters, got {VALUE}'],
-			trim: true,
-		},
-	},
-	{ _id: false, timestamps: false, minimize: true }
-);
-
-const imageSchema = new Schema(
-	{
-		image_id: {
-			type: String,
-			required: [true, 'image-ID is required'],
-			unique: [true, 'image-ID must be unique'],
-			select: true,
-		},
-		format: {
-			type: String,
-			enum: {
-				values: allowedImageFormats,
-				message: `{VALUE} is not supported`,
-			},
-			required: [true, 'image-format is required'],
-			select: true,
-		},
-		URL: {
-			type: String,
-			required: [true, 'image-url is required'],
-			trim: true,
-			unique: true,
-			select: true,
-		},
-	},
-	{
-		_id: false,
-		timestamps: false,
-		minimize: true,
-	}
-);
+import { Schema, model } from 'mongoose';
+import { allowedImageFormats, emailRegex } from '../constants.js';
 
 const userSchema = new Schema(
 	{
@@ -83,8 +29,9 @@ const userSchema = new Schema(
 			select: true,
 		},
 		fullName: {
-			type: nameSchema,
-			select: false,
+			type: String,
+			default: 'New User',
+			trim: true,
 		},
 		gender: {
 			type: String,
@@ -92,7 +39,12 @@ const userSchema = new Schema(
 				values: ['Male', 'Female', 'Other', 'I prefer not to share'],
 				message: `{VALUE} is not supported`,
 			},
-			default: 'I prefer not to share',
+			default: 'Other',
+			select: false,
+		},
+		dateOfBirth: {
+			type: Date,
+			default: '2000-12-25',
 			select: false,
 		},
 		age: {
@@ -102,12 +54,26 @@ const userSchema = new Schema(
 			select: false,
 		},
 		profilePicture: {
-			type: imageSchema,
-			select: false,
-		},
-		coverImage: {
-			type: imageSchema,
-			select: false,
+			image_id: {
+				type: String,
+				select: true,
+				default: null,
+			},
+			format: {
+				type: String,
+				enum: {
+					values: allowedImageFormats,
+					message: `{VALUE} is not supported`,
+				},
+				select: true,
+				default: null,
+			},
+			URL: {
+				type: String,
+				trim: true,
+				select: true,
+				default: null,
+			},
 		},
 		password: {
 			type: String,
@@ -119,18 +85,18 @@ const userSchema = new Schema(
 			default: false,
 			select: false,
 		},
-		watchHistory: [
+		likedFeedItems: [
 			{
 				type: Schema.Types.ObjectId,
-				ref: 'YoutubeVideo',
+				ref: 'feedItem',
 				default: undefined,
 				select: false,
 			},
 		],
-		readHistory: [
+		likedFeeds: [
 			{
 				type: Schema.Types.ObjectId,
-				ref: 'feedItem',
+				ref: 'Feed',
 				default: undefined,
 				select: false,
 			},

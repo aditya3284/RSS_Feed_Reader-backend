@@ -122,7 +122,7 @@ const loginUser = async (req, res, next) => {
 		);
 
 		const loggedInUser = await User.findById(user._id).select(
-			'+_id, +username, +email +fullName.firstName'
+			'+_id, +username, +email +fullName +dateOfBirth +profilePicture'
 		);
 
 		const cookieOptions = { httpOnly: true, secure: false, sameSite: 'strict' };
@@ -134,7 +134,7 @@ const loginUser = async (req, res, next) => {
 			.json(
 				new APIResponse(
 					HttpsStatusCode.OK,
-					{ user: loggedInUser },
+					loggedInUser,
 					'User Logged In Successfully'
 				)
 			);
@@ -302,14 +302,14 @@ const getUserProfileDetails = async (req, res, next) => {
 			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
 		}
 		const user = await User.findById(userID).select(
-			'+coverImage +profilePicture +age +gender +fullName'
+			' +profilePicture +gender +fullName +dateOfBirth'
 		);
 		return res
 			.status(200)
 			.json(
 				new APIResponse(
 					HttpsStatusCode.OK,
-					{ ...user._doc },
+					user,
 					'User profile data retrieved successfully'
 				)
 			);
@@ -342,7 +342,7 @@ const registerUserProfileDetails = async (req, res, next) => {
 				$set: { fullName, gender, age },
 			},
 			{ new: true, runValidators: true }
-		).select('+fullName +gender +age');
+		).select('+fullName +gender');
 
 		if (!user) {
 			throw new APIError(HttpsStatusCode.NOT_FOUND, 'User not found');
@@ -385,7 +385,7 @@ const updateUserProfileDetails = async (req, res, next) => {
 				$set: value,
 			},
 			{ new: true, runValidators: true }
-		).select('+fullName +gender +age');
+		).select('+fullName +gender +dateOfBirth');
 
 		if (!user) {
 			throw new APIError(HttpsStatusCode.NOT_FOUND, 'User not found');
