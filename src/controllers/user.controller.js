@@ -1,12 +1,15 @@
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import { HttpsStatusCode } from '../constants.js';
+import { Feed } from '../models/feed.model.js';
+import { feedItem } from '../models/feedItem.model.js';
 import { User } from '../models/user.model.js';
 import {
 	removeImageFromCloudinary,
 	uploadImageToCloudinary,
 } from '../utils/cloudinary.js';
 import APIError from '../utils/errors.js';
+import { deleteFeedItemsFromDatabase } from '../utils/feedItem.js';
 import APIResponse from '../utils/response.js';
 import {
 	validateLoginRequest,
@@ -417,15 +420,27 @@ const deleteUserProfile = async (req, res, next) => {
 		if (!userID) {
 			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
 		}
-		const deletedUser = await User.findByIdAndDelete(userID).select(
-			'+coverImage +profilePicture +age +gender +fullName'
-		);
+		const deletedUser =
+			await User.findByIdAndDelete(userID).select('+allFeeds');
+
+		const deleteUserFeeds = deletedUser.allFeeds.map(async (element) => {
+			const feedItemsToDelete = await feedItem.find({
+				sourceFeed: element?.feedID,
+			});
+
+			await deleteFeedItemsFromDatabase(feedItemsToDelete, userID);
+			await Feed.findByIdAndDelete(element.feedID);
+		});
+
+		await Promise.all(deleteUserFeeds);
 
 		const cookieOptions = {
 			httpOnly: true,
 			secure: false,
 			sameSite: 'strict',
 		};
+
+		await removeImageFromCloudinary(deletedUser.profilePicture.image_id);
 
 		return res
 			.status(200)

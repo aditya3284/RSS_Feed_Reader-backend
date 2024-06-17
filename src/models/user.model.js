@@ -101,6 +101,20 @@ const userSchema = new Schema(
 				select: false,
 			},
 		],
+		allFeeds: [
+			{
+				feedID: {
+					type: Schema.Types.ObjectId,
+					ref: 'Feed',
+					default: undefined,
+				},
+				url: {
+					type: String,
+					trim: true,
+					default: undefined,
+				},
+			},
+		],
 		refreshToken: {
 			type: String,
 			select: false,
