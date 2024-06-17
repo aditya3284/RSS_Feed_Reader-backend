@@ -1,6 +1,11 @@
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import { HttpsStatusCode } from '../constants.js';
 import { User } from '../models/user.model.js';
+import {
+	removeImageFromCloudinary,
+	uploadImageToCloudinary,
+} from '../utils/cloudinary.js';
 import APIError from '../utils/errors.js';
 import APIResponse from '../utils/response.js';
 import {
@@ -9,11 +14,6 @@ import {
 	validateUserPasswordChangeRequest,
 	validateUserProfileDetails,
 } from '../utils/validate.js';
-import {
-	uploadImageToCloudinary,
-	removeImageFromCloudinary,
-} from '../utils/cloudinary.js';
-import mongoose from 'mongoose';
 
 const generateAccessAndRefreshTokens = async (userID) => {
 	try {
@@ -456,7 +456,7 @@ const getProfilePicture = async (req, res, next) => {
 			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
 		}
 		const user = await User.findById(userID).select(
-			'+profilePicture +fullName -email -createdAt -updatedAt'
+			'+profilePicture +fullName'
 		);
 		return res
 			.status(200)
@@ -486,9 +486,7 @@ const updateProfilePicture = async (req, res, next) => {
 			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
 		}
 
-		const user = await User.findById(userID).select(
-			'-password -refreshToken -watchHistory -readHistory -email +profilePicture'
-		);
+		const user = await User.findById(userID).select('+profilePicture');
 
 		const uploadedImage = await uploadImageToCloudinary(profilePicture);
 
@@ -511,9 +509,7 @@ const updateProfilePicture = async (req, res, next) => {
 				},
 			},
 			{ new: true, runValidators: true }
-		).select(
-			'-password -refreshToken -watchHistory -readHistory -email +profilePicture'
-		);
+		).select('+profilePicture');
 
 		if (updatedUser.profilePicture.URL === uploadedImage.url) {
 			await removeImageFromCloudinary(user.profilePicture.image_id);
@@ -546,9 +542,7 @@ const deleteProfilePicture = async (req, res, next) => {
 			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
 		}
 
-		const user = await User.findById(userID).select(
-			'-password -refreshToken -watchHistory -readHistory -email +profilePicture'
-		);
+		const user = await User.findById(userID).select('+profilePicture');
 
 		const updatedUser = await User.findByIdAndUpdate(
 			userID,
@@ -557,14 +551,12 @@ const deleteProfilePicture = async (req, res, next) => {
 					profilePicture: {
 						image_id: null,
 						format: null,
-						URL: '',
+						URL: null,
 					},
 				},
 			},
 			{ new: true }
-		).select(
-			'-password -refreshToken -watchHistory -readHistory -email +profilePicture'
-		);
+		).select('+profilePicture');
 
 		if (updatedUser.profilePicture.image_id === null) {
 			await removeImageFromCloudinary(user.profilePicture.image_id);
@@ -575,7 +567,7 @@ const deleteProfilePicture = async (req, res, next) => {
 			.json(
 				new APIResponse(
 					HttpsStatusCode.OK,
-					{ profilePicture: updatedUser.profilePicture },
+					updatedUser.profilePicture,
 					'User profile picture removed successfully'
 				)
 			);
@@ -628,8 +620,8 @@ export {
 	getProfilePicture,
 	getReadHistory,
 	getUserProfileDetails,
-	logOutUser,
 	loginUser,
+	logOutUser,
 	refreshAccessToken,
 	registerUser,
 	registerUserProfileDetails,
