@@ -599,6 +599,7 @@ const deleteProfilePicture = async (req, res, next) => {
 const getReadHistory = async (req, res, next) => {
 	try {
 		const userID = String(req.userID);
+
 		const user = await User.aggregate()
 			.match({ _id: new mongoose.Types.ObjectId(userID) })
 			.lookup({
@@ -607,15 +608,126 @@ const getReadHistory = async (req, res, next) => {
 				foreignField: 'readBy',
 				as: 'readHistory',
 			})
-			.project({ fullName: 1, readHistory: 1 });
+			.unwind({ path: '$readHistory' })
+			.addFields({
+				'readHistory.daysAgo': {
+					$dateDiff: {
+						startDate: '$readHistory.lastOpenedAt',
+						endDate: new Date(),
+						unit: 'day',
+					},
+				},
+			})
+			.group({
+				_id: '$readHistory.daysAgo',
+				history: { $push: '$readHistory' },
+			})
+			.sort({ _id: 'ascending' })
+			.project({
+				heading: {
+					$switch: {
+						branches: [
+							{ case: { $eq: ['$_id', 0] }, then: 'today' },
+							{ case: { $eq: ['$_id', 1] }, then: 'yesterday' },
+							{ case: { $eq: ['$_id', 2] }, then: '2 days ago' },
+							{ case: { $eq: ['$_id', 3] }, then: '3 days ago' },
+							{ case: { $eq: ['$_id', 4] }, then: '4 days ago' },
+							{ case: { $eq: ['$_id', 5] }, then: '5 days ago' },
+							{ case: { $eq: ['$_id', 6] }, then: '6 days ago' },
+							{
+								case: { $and: [{ $gte: ['$_id', 7] }, { $lt: ['$_id', 14] }] },
+								then: '1 week ago',
+							},
+							{
+								case: { $and: [{ $gte: ['$_id', 14] }, { $lt: ['$_id', 21] }] },
+								then: '2 week ago',
+							},
+							{
+								case: { $and: [{ $gte: ['$_id', 21] }, { $lt: ['$_id', 28] }] },
+								then: '3 week ago',
+							},
+							{
+								case: { $and: [{ $gte: ['$_id', 28] }, { $lt: ['$_id', 35] }] },
+								then: '1 month ago',
+							},
+							{
+								case: { $and: [{ $gte: ['$_id', 35] }, { $lt: ['$_id', 65] }] },
+								then: '2 months ago',
+							},
+							{
+								case: { $and: [{ $gte: ['$_id', 65] }, { $lt: ['$_id', 95] }] },
+								then: '3 months ago',
+							},
+							{
+								case: {
+									$and: [{ $gte: ['$_id', 95] }, { $lt: ['$_id', 125] }],
+								},
+								then: '4 months ago',
+							},
+							{
+								case: {
+									$and: [{ $gte: ['$_id', 125] }, { $lt: ['$_id', 155] }],
+								},
+								then: '5 months ago',
+							},
+							{
+								case: {
+									$and: [{ $gte: ['$_id', 155] }, { $lt: ['$_id', 185] }],
+								},
+								then: '6 months ago',
+							},
+							{
+								case: {
+									$and: [{ $gte: ['$_id', 185] }, { $lt: ['$_id', 215] }],
+								},
+								then: '7 months ago',
+							},
+							{
+								case: {
+									$and: [{ $gte: ['$_id', 215] }, { $lt: ['$_id', 245] }],
+								},
+								then: '8 months ago',
+							},
+							{
+								case: {
+									$and: [{ $gte: ['$_id', 245] }, { $lt: ['$_id', 275] }],
+								},
+								then: '9 months ago',
+							},
+							{
+								case: {
+									$and: [{ $gte: ['$_id', 275] }, { $lt: ['$_id', 305] }],
+								},
+								then: '10 months ago',
+							},
+							{
+								case: {
+									$and: [{ $gte: ['$_id', 305] }, { $lt: ['$_id', 335] }],
+								},
+								then: '11 months ago',
+							},
+							{
+								case: {
+									$and: [{ $gte: ['$_id', 335] }, { $lt: ['$_id', 365] }],
+								},
+								then: 'a year ago',
+							},
+						],
+						default: 'Older',
+					},
+				},
+				history: {
+					$sortArray: { input: '$history', sortBy: { lastOpenedAt: -1 } },
+				},
+			});
 
 		return res
 			.status(200)
 			.json(
 				new APIResponse(
 					HttpsStatusCode.OK,
-					{ ...user[0] },
-					'User profile picture retrieved successfully'
+					user,
+					'User history retrieved successfully'
 				)
 			);
 	} catch (error) {
