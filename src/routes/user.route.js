@@ -3,6 +3,7 @@ import {
 	changeUserPassword,
 	deleteProfilePicture,
 	deleteUserProfile,
+	getLikedFeedItems,
 	getProfilePicture,
 	getReadHistory,
 	getUserProfileDetails,
@@ -40,6 +41,8 @@ router
 		updateProfilePicture
 	)
 	.delete(verifyAccess, deleteProfilePicture);
+
 router.route('/history/read').get(verifyAccess, getReadHistory);
+router.route('/liked/items').get(verifyAccess, getLikedFeedItems);
 
 export default router;

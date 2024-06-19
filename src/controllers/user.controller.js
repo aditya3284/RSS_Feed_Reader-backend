@@ -740,10 +740,60 @@ const getReadHistory = async (req, res, next) => {
 	}
 };
 
+const getLikedFeedItems = async (req, res, next) => {
+	try {
+		const userID = String(req.userID);
+		const limit = parseInt(req.query.limit ?? 5);
+		const skip = parseInt(req.query.offset ?? 0);
+
+		const user = await User.aggregate()
+			.match({ _id: new mongoose.Types.ObjectId(userID) })
+			.lookup({
+				from: 'feeditems',
+				localField: 'likedFeedItems',
+				foreignField: '_id',
+				as: 'likedFeedItemsList',
+			})
+			.project({
+				likedFeedItemsList: {
+					$slice: [
+						{
+							$sortArray: {
+								input: '$likedFeedItemsList',
+								sortBy: { updatedAt: -1 },
+							},
+						},
+						skip,
+						limit,
+					],
+				},
+				totalLikedFeedItem: { $size: '$likedFeedItemsList' },
+			});
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ ...user[0] },
+					'User liked feed items retrieved successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.UNAUTHORIZED,
+				error.message || 'Unauthorized user request'
+			)
+		);
+	}
+};
+
 export {
 	changeUserPassword,
 	deleteProfilePicture,
 	deleteUserProfile,
+	getLikedFeedItems,
 	getProfilePicture,
 	getReadHistory,
 	getUserProfileDetails,
