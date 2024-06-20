@@ -4,6 +4,7 @@ import {
 	deleteProfilePicture,
 	deleteUserProfile,
 	getLikedFeedItems,
+	getLikedFeeds,
 	getProfilePicture,
 	getReadHistory,
 	getUserProfileDetails,
@@ -44,5 +45,6 @@ router
 
 router.route('/history/read').get(verifyAccess, getReadHistory);
 router.route('/liked/items').get(verifyAccess, getLikedFeedItems);
+router.route('/liked/feeds').get(verifyAccess, getLikedFeeds);
 
 export default router;
