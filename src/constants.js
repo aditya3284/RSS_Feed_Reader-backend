@@ -15,12 +15,7 @@ export const allowedImageFormats = [
 	'webp',
 	'jpeg',
 	'jpg',
-	'pjp',
-	'pjpeg',
-	'jfif',
 	'png',
-	'bmp',
-	'ico',
 ];
 
 export const emailRegex = /^\w+([.+-]?\w+)+@\w+([.-]?\w+)+\.(\w{2,6})$/;
