@@ -9,6 +9,7 @@ import {
 	uploadImageToCloudinary,
 } from '../utils/cloudinary.js';
 import APIError from '../utils/errors.js';
+import { SaveFeedItemInDatabase, fetchFeed, parseFeed } from '../utils/feed.js';
 import { deleteFeedItemsFromDatabase } from '../utils/feedItem.js';
 import APIResponse from '../utils/response.js';
 import {
@@ -837,20 +838,80 @@ const getLikedFeeds = async (req, res, next) => {
 	}
 };
 
+const getAllFeedItems = async (req, res, next) => {
+	try {
+		const userID = String(req.userID);
+		const limit = parseInt(req.query.limit ?? 6);
+		const skip = parseInt(req.query.offset ?? 0);
+		const user = await User.findById(req.userID).select('+allFeeds');
+
+		const syncFeeds = user.allFeeds.map(async ({ feedID, url }) => {
+			const xmlResponse = await fetchFeed(url);
+			const parsedFeed = await parseFeed(xmlResponse);
+			await SaveFeedItemInDatabase(parsedFeed, feedID, req.userID);
+		});
+
+		await Promise.all(syncFeeds);
+
+		const itemList = await User.aggregate()
+			.match({ _id: new mongoose.Types.ObjectId(userID) })
+			.lookup({
+				from: 'feeditems',
+				localField: '_id',
+				foreignField: 'addedForUser',
+				as: 'feedItemsList',
+			})
+			.project({
+				feedItemsList: {
+					$slice: [
+						{
+							$sortArray: {
+								input: '$feedItemsList',
+								sortBy: { publishedAt: -1 },
+							},
+						},
+						skip,
+						limit,
+					],
+				},
+				totalCount: { $size: '$feedItemsList' },
+			});
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ ...itemList[0] },
+					'User feed items retrieved successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.UNAUTHORIZED,
+				error.message || 'Unauthorized user request'
+			)
+		);
+	}
+};
+
 export {
 	changeUserPassword,
 	deleteProfilePicture,
 	deleteUserProfile,
+	getAllFeedItems,
 	getLikedFeedItems,
 	getLikedFeeds,
 	getProfilePicture,
 	getReadHistory,
 	getUserProfileDetails,
-	loginUser,
 	logOutUser,
+	loginUser,
 	refreshAccessToken,
 	registerUser,
 	registerUserProfileDetails,
 	updateProfilePicture,
-	updateUserProfileDetails,
+	updateUserProfileDetails
 };
+
