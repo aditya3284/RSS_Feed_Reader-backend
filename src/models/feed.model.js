@@ -14,14 +14,30 @@ const feedSchema = new Schema(
 			trim: true,
 			default: null,
 		},
+		websiteURL: {
+			type: String,
+			trim: true,
+			default: null,
+		},
 		url: {
 			type: String,
 			required: [true, 'feed URL is required'],
+			unique: true,
 			trim: true,
 		},
-		iconUrl: {
-			type: String,
-			trim: true,
+		icon: {
+			image_id: {
+				type: String,
+				trim: true,
+				select: true,
+				default: null,
+			},
+			URL: {
+				type: String,
+				trim: true,
+				select: true,
+				default: null,
+			},
 		},
 		lastFetched: {
 			type: Date,

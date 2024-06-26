@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { verifyAccess } from '../middlewares/authentication.middleware.js';
 import {
 	createFeed,
 	deleteFeed,
@@ -7,6 +6,7 @@ import {
 	retrieveUserFeeds,
 	updateUserFeed,
 } from '../controllers/feed.controller.js';
+import { verifyAccess } from '../middlewares/authentication.middleware.js';
 
 const routerOptions = { caseSensitive: false, strict: false };
 const router = Router(routerOptions);
@@ -14,7 +14,7 @@ const router = Router(routerOptions);
 router.route('/u/:username').get(verifyAccess, retrieveUserFeeds);
 
 router
-	.route('/f/:feedName')
+	.route('/f/:feedID')
 	.get(verifyAccess, getFeed)
 	.patch(verifyAccess, updateUserFeed)
 	.delete(verifyAccess, deleteFeed);

@@ -1,13 +1,13 @@
-import APIError from '../utils/errors.js';
-import APIResponse from '../utils/response.js';
 import mongoose from 'mongoose';
 import { HttpsStatusCode } from '../constants.js';
-import { User } from '../models/user.model.js';
 import { Feed } from '../models/feed.model.js';
-import { validateFeedInfo, validateFeedURL } from '../utils/validate.js';
-import { SaveFeedItemInDatabase, fetchFeed, parseFeed } from '../utils/feed.js';
 import { feedItem } from '../models/feedItem.model.js';
+import { User } from '../models/user.model.js';
+import APIError from '../utils/errors.js';
+import { SaveFeedItemInDatabase, fetchFeed, parseFeed } from '../utils/feed.js';
 import { deleteFeedItemsFromDatabase } from '../utils/feedItem.js';
+import APIResponse from '../utils/response.js';
+import { validateFeedInfo, validateFeedURL } from '../utils/validate.js';
 
 const retrieveUserFeeds = async (req, res, next) => {
 	try {
@@ -48,7 +48,7 @@ const retrieveUserFeeds = async (req, res, next) => {
 
 const updateUserFeed = async (req, res, next) => {
 	try {
-		const { feedName } = req.params;
+		const { feedID } = req.params;
 		const { error, value } = validateFeedInfo(req.body);
 
 		if (error) {
@@ -58,7 +58,7 @@ const updateUserFeed = async (req, res, next) => {
 			);
 		}
 
-		const updatedItem = await Feed.findOneAndUpdate({ name: feedName }, value, {
+		const updatedItem = await Feed.findOneAndUpdate(feedID, value, {
 			new: true,
 			runValidators: true,
 		});
@@ -69,6 +69,7 @@ const updateUserFeed = async (req, res, next) => {
 				"Maybe the feed you want to access doesn't exist or Provided information is irrelevant!! Try later"
 			);
 		}
+
 		if (updatedItem instanceof Error) {
 			throw new APIError(
 				HttpsStatusCode.INTERNAL_SERVER_ERROR,
@@ -97,29 +98,16 @@ const updateUserFeed = async (req, res, next) => {
 
 const getFeed = async (req, res, next) => {
 	try {
-		const userId = String(req.userID);
-		const { feedName } = req.params;
+		const { feedID } = req.params;
 
-		const feed = await Feed.aggregate()
-			.match({
-				$and: [
-					{ name: feedName },
-					{ addedBy: new mongoose.Types.ObjectId(userId) },
-				],
-			})
-			.lookup({
-				from: 'feeditems',
-				localField: '_id',
-				foreignField: 'sourceFeed',
-				as: 'items',
-			})
-			.project({ name: 1, items: 1, favorite: 1, iconUrl: 1, url: 1 });
+		const feed = await Feed.findById(feedID);
+
 		return res
 			.status(200)
 			.json(
 				new APIResponse(
 					HttpsStatusCode.OK,
-					{ ...feed[0] },
+					feed,
 					feed.length !== 0
 						? 'Requested Feed Retieved Successfully'
 						: "Requested Feed Doesn't Exist"
@@ -129,7 +117,7 @@ const getFeed = async (req, res, next) => {
 		next(
 			new APIError(
 				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
-				error.message || 'Failed to complete the request, try after sometime'
+				error.message || 'Failed to complete your request, try after sometime'
 			)
 		);
 	}
@@ -145,6 +133,8 @@ const createFeed = async (req, res, next) => {
 				error.details.map((msg) => msg.message)
 			);
 		}
+
+		const userId = req.userID;
 		const feedURL = value.feedURL;
 		const existingFeed = await Feed.findOne({ url: feedURL });
 
@@ -156,12 +146,21 @@ const createFeed = async (req, res, next) => {
 		const parsedFeed = await parseFeed(feedResponse);
 		const feed = await Feed.create({
 			name: parsedFeed.feed.author[0].name[0],
-			url: parsedFeed.feed.author[0].uri[0],
+			websiteURL: parsedFeed.feed.author[0].uri[0],
+			url: feedURL,
 			lastFetched: new Date(),
-			addedBy: req.userID,
+			addedBy: userId,
 		});
 
-		await SaveFeedItemInDatabase(parsedFeed, feed._id);
+		await User.findByIdAndUpdate(
+			userId,
+			{
+				$push: { allFeeds: { feedID: feed._id, url: feed.url } },
+			},
+			{ runValidators: true }
+		);
+
+		await SaveFeedItemInDatabase(parsedFeed, feed._id, userId);
 
 		const newlyCreatedUser = await Feed.findById(feed._id).select(
 			'+_id +name +url'
@@ -195,10 +194,13 @@ const createFeed = async (req, res, next) => {
 
 const deleteFeed = async (req, res, next) => {
 	try {
-		const { feedName } = req.params;
+		const feedID = String(req.params.feedID);
 
 		const deletedFeed = await Feed.findOneAndDelete({
-			$and: [{ name: feedName }, { addedBy: req.userID }],
+			$and: [
+				{ _id: new mongoose.Types.ObjectId(feedID) },
+				{ addedBy: req.userID },
+			],
 		}).select('+name +url +iconUrl +description +addedBy +favorite');
 
 		const feedItemsToDelete = await feedItem.find({
