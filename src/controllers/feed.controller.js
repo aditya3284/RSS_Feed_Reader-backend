@@ -3,6 +3,7 @@ import { HttpsStatusCode } from '../constants.js';
 import { Feed } from '../models/feed.model.js';
 import { feedItem } from '../models/feedItem.model.js';
 import { User } from '../models/user.model.js';
+import { removeImageFromCloudinary } from '../utils/cloudinary.js';
 import APIError from '../utils/errors.js';
 import { SaveFeedItemInDatabase, fetchFeed, parseFeed } from '../utils/feed.js';
 import { deleteFeedItemsFromDatabase } from '../utils/feedItem.js';
@@ -195,19 +196,14 @@ const createFeed = async (req, res, next) => {
 const deleteFeed = async (req, res, next) => {
 	try {
 		const feedID = String(req.params.feedID);
+		const userId = req.userID;
 
 		const deletedFeed = await Feed.findOneAndDelete({
 			$and: [
 				{ _id: new mongoose.Types.ObjectId(feedID) },
 				{ addedBy: req.userID },
 			],
-		}).select('+name +url +iconUrl +description +addedBy +favorite');
-
-		const feedItemsToDelete = await feedItem.find({
-			sourceFeed: deletedFeed?._id,
-		});
-
-		await deleteFeedItemsFromDatabase(feedItemsToDelete);
+		}).select('+name +url +icon +addedBy +favorite');
 
 		if (!deletedFeed) {
 			throw new APIError(
@@ -215,6 +211,32 @@ const deleteFeed = async (req, res, next) => {
 				"Either this feed doesn't exist already or you provided a invalid feed information !! Try agian Later"
 			);
 		}
+
+		const user = await User.findById(userId).select('+allFeeds +likedFeeds');
+
+		const feedIndex = user.allFeeds.findIndex(
+			(feed) => feed.url === deletedFeed.url || feed.feedID === deletedFeed._id
+		);
+
+		if (0 <= feedIndex && feedIndex < user.allFeeds.length) {
+			user.allFeeds.splice(feedIndex, 1);
+		}
+
+		const index = user.likedFeeds.indexOf(deletedFeed._id);
+
+		if (0 <= index && index < user.likedFeeds.length) {
+			user.likedFeeds.splice(index, 1);
+		}
+
+		await user.save({ validateModifiedOnly: true });
+
+		const feedItemsToDelete = await feedItem.find({
+			sourceFeed: deletedFeed?._id,
+		});
+
+		await deleteFeedItemsFromDatabase(feedItemsToDelete, userId);
+		await removeImageFromCloudinary(deletedFeed.icon.image_id);
+
 		return res
 			.status(200)
 			.json(
