@@ -242,7 +242,7 @@ const deleteFeed = async (req, res, next) => {
 			.json(
 				new APIResponse(
 					HttpsStatusCode.OK,
-					{ ...deletedFeed?._doc },
+					deletedFeed,
 					'Feed removed successfully'
 				)
 			);
@@ -256,4 +256,39 @@ const deleteFeed = async (req, res, next) => {
 	}
 };
 
-export { createFeed, deleteFeed, getFeed, retrieveUserFeeds, updateUserFeed };
+const getFeedIcon = async (req, res, next) => {
+	try {
+		const { feedID } = req.params;
+
+		if (!feedID) {
+			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
+		}
+		const icon = await Feed.findById(feedID).select('+icon');
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					icon,
+					'Feed Icon retrieved successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.UNAUTHORIZED,
+				error.message || 'Unauthorized user request'
+			)
+		);
+	}
+};
+
+export {
+	createFeed,
+	deleteFeed,
+	getFeed,
+	getFeedIcon,
+	retrieveUserFeeds,
+	updateUserFeed,
+};

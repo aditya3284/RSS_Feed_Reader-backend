@@ -3,6 +3,7 @@ import {
 	createFeed,
 	deleteFeed,
 	getFeed,
+	getFeedIcon,
 	retrieveUserFeeds,
 	updateUserFeed,
 } from '../controllers/feed.controller.js';
@@ -20,5 +21,7 @@ router
 	.delete(verifyAccess, deleteFeed);
 
 router.route('/submit').post(verifyAccess, createFeed);
+
+router.route('/icon/:feedID').get(verifyAccess, getFeedIcon);
 
 export default router;
