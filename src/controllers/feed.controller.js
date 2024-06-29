@@ -3,7 +3,10 @@ import { HttpsStatusCode } from '../constants.js';
 import { Feed } from '../models/feed.model.js';
 import { feedItem } from '../models/feedItem.model.js';
 import { User } from '../models/user.model.js';
-import { removeImageFromCloudinary } from '../utils/cloudinary.js';
+import {
+	removeImageFromCloudinary,
+	uploadImageToCloudinary,
+} from '../utils/cloudinary.js';
 import APIError from '../utils/errors.js';
 import { SaveFeedItemInDatabase, fetchFeed, parseFeed } from '../utils/feed.js';
 import { deleteFeedItemsFromDatabase } from '../utils/feedItem.js';
@@ -284,11 +287,65 @@ const getFeedIcon = async (req, res, next) => {
 	}
 };
 
+const updateFeedIcon = async (req, res, next) => {
+	try {
+		const feedID = req.params.feedID;
+		const iconPath = req.file?.path;
+
+		if (!feedID) {
+			throw new APIError(HttpsStatusCode.UNAUTHORIZED, 'Invalid user request');
+		}
+
+		const feed = await Feed.findById(feedID).select('+icon');
+
+		const uploadedImage = await uploadImageToCloudinary(iconPath);
+
+		if (uploadedImage instanceof Error) {
+			throw new APIError(
+				HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				'Failed to update the image, try after sometime'
+			);
+		}
+
+		const updatedFeed = await Feed.findByIdAndUpdate(
+			feedID,
+			{
+				$set: {
+					icon: { image_id: uploadedImage.public_id, URL: uploadedImage.url },
+				},
+			},
+			{ new: true, runValidators: true }
+		).select('+icon');
+
+		if (updatedFeed.icon.URL === uploadedImage.url) {
+			await removeImageFromCloudinary(feed.icon.image_id);
+		}
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					{ icon: updatedFeed.icon },
+					'Feed icon updated successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				error.message || 'Failed to fulfil the request, try agian later'
+			)
+		);
+	}
+};
+
 export {
 	createFeed,
 	deleteFeed,
 	getFeed,
 	getFeedIcon,
 	retrieveUserFeeds,
+	updateFeedIcon,
 	updateUserFeed,
 };

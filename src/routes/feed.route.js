@@ -5,9 +5,11 @@ import {
 	getFeed,
 	getFeedIcon,
 	retrieveUserFeeds,
+	updateFeedIcon,
 	updateUserFeed,
 } from '../controllers/feed.controller.js';
 import { verifyAccess } from '../middlewares/authentication.middleware.js';
+import upload from '../middlewares/multer.middlerware.js';
 
 const routerOptions = { caseSensitive: false, strict: false };
 const router = Router(routerOptions);
@@ -22,6 +24,9 @@ router
 
 router.route('/submit').post(verifyAccess, createFeed);
 
-router.route('/icon/:feedID').get(verifyAccess, getFeedIcon);
+router
+	.route('/icon/:feedID')
+	.get(verifyAccess, getFeedIcon)
+	.patch(verifyAccess, upload.single('feedIcon'), updateFeedIcon);
 
 export default router;
