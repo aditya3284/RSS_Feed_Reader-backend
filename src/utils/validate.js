@@ -18,7 +18,7 @@ const loginRequestSchema = Joi.object({
 		.lowercase()
 		.required()
 		.trim(true)
-		.pattern(emailRegex, { name: 'E-mail' }),
+		.pattern(emailRegex),
 	password: Joi.string().alphanum().min(8).max(48).required(),
 });
 
@@ -28,11 +28,10 @@ const changeUserPasswordSchema = Joi.object({
 });
 
 const userProfileDetailsSchema = Joi.object({
-	fullName: Joi.object({
-		firstName: Joi.string().trim(true).min(2).max(24),
-		middleName: Joi.string().trim(true).min(1).max(24),
-		lastName: Joi.string().trim(true).min(2).max(24),
-	}).max(3),
+	fullName: Joi.string().trim(true).min(2).max(125),
+	username: Joi.string().alphanum().lowercase().min(1).max(32),
+	email: Joi.string().email().lowercase().trim(true).pattern(emailRegex),
+	dateOfBirth: Joi.date(),
 	gender: Joi.string()
 		.trim(true)
 		.valid('Male', 'Female', 'Other', 'I prefer not to share'),
