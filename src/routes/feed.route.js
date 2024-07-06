@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
 	createFeed,
 	deleteFeed,
+	deleteFeedIcon,
 	getFeed,
 	getFeedIcon,
 	retrieveUserFeeds,
@@ -27,6 +28,7 @@ router.route('/submit').post(verifyAccess, createFeed);
 router
 	.route('/icon/:feedID')
 	.get(verifyAccess, getFeedIcon)
-	.patch(verifyAccess, upload.single('feedIcon'), updateFeedIcon);
+	.patch(verifyAccess, upload.single('feedIcon'), updateFeedIcon)
+	.delete(verifyAccess, deleteFeedIcon);
 
 export default router;

@@ -340,9 +340,56 @@ const updateFeedIcon = async (req, res, next) => {
 	}
 };
 
+const deleteFeedIcon = async (req, res, next) => {
+	try {
+		const { feedID } = req.params;
+
+		if (!feedID) {
+			throw new APIError(HttpsStatusCode.BAD_REQUEST, 'Invalid user request');
+		}
+
+		const feed = await Feed.findById(feedID).select('+icon');
+
+		const updatedFeed = await Feed.findByIdAndUpdate(
+			feedID,
+			{
+				$set: {
+					icon: {
+						image_id: null,
+						URL: null,
+					},
+				},
+			},
+			{ new: true }
+		).select('+icon');
+
+		if (updatedFeed.icon.image_id === null) {
+			await removeImageFromCloudinary(feed.icon.image_id);
+		}
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					updatedFeed.icon,
+					'Feed icon removed successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				error.message || 'Failed to complete the request, try after sometime'
+			)
+		);
+	}
+};
+
 export {
 	createFeed,
 	deleteFeed,
+	deleteFeedIcon,
 	getFeed,
 	getFeedIcon,
 	retrieveUserFeeds,
