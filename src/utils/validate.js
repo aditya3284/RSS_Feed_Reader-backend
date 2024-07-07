@@ -40,14 +40,18 @@ const userProfileDetailsSchema = Joi.object({
 
 const feedInfoSchema = Joi.object({
 	name: Joi.string().trim(true),
-	iconUrl: Joi.string().trim(true),
 	textDirection: Joi.string().valid('ltr', 'rtl').trim(true),
-	favorite: Joi.boolean(),
 });
 
-const feedURLSchema = Joi.object({ feedURL: Joi.string().trim(true) });
+const LikedFeedSchema = Joi.object({
+	favorite: Joi.boolean().required(),
+	url: Joi.string().uri().trim(true),
+});
 
-const feedItemInfoSchema = Joi.object({ hasRead: Joi.boolean() });
+const LikedFeedItemSchema = Joi.object({
+	favorite: Joi.boolean().required(),
+	url: Joi.string().uri().trim(true),
+});
 
 const validateRegistorRequest = (value) => {
 	return registerRequestSchema.validate(value, { abortEarly: false });
@@ -69,20 +73,20 @@ const validateFeedInfo = (value) => {
 	return feedInfoSchema.validate(value, { abortEarly: false });
 };
 
-const validateFeedURL = (value) => {
-	return feedURLSchema.validate(value, { abortEarly: false });
+const validateLikedFeed = (value) => {
+	return LikedFeedSchema.validate(value, { abortEarly: true });
 };
 
-const validateFeedItemInfo = (value) => {
-	return feedItemInfoSchema.validate(value, { abortEarly: false });
+const validateLikedFeedItem = (value) => {
+	return LikedFeedItemSchema.validate(value, { abortEarly: true });
 };
 
 export {
 	validateFeedInfo,
-	validateFeedItemInfo,
+	validateLikedFeed,
+	validateLikedFeedItem,
 	validateLoginRequest,
 	validateRegistorRequest,
 	validateUserPasswordChangeRequest,
 	validateUserProfileDetails,
-	validateFeedURL,
 };
