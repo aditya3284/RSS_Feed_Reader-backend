@@ -43,6 +43,10 @@ const feedInfoSchema = Joi.object({
 	textDirection: Joi.string().valid('ltr', 'rtl').trim(true),
 });
 
+const feedURLSchema = Joi.object({
+	feedURL: Joi.string().uri().trim(true).required(),
+});
+
 const LikedFeedSchema = Joi.object({
 	favorite: Joi.boolean().required(),
 	url: Joi.string().uri().trim(true),
@@ -73,6 +77,10 @@ const validateFeedInfo = (value) => {
 	return feedInfoSchema.validate(value, { abortEarly: false });
 };
 
+const validateFeedURL = (value) => {
+	return feedURLSchema.validate(value, { abortEarly: false });
+};
+
 const validateLikedFeed = (value) => {
 	return LikedFeedSchema.validate(value, { abortEarly: true });
 };
@@ -83,6 +91,7 @@ const validateLikedFeedItem = (value) => {
 
 export {
 	validateFeedInfo,
+	validateFeedURL,
 	validateLikedFeed,
 	validateLikedFeedItem,
 	validateLoginRequest,
