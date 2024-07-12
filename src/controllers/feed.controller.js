@@ -11,7 +11,11 @@ import APIError from '../utils/errors.js';
 import { SaveFeedItemInDatabase, fetchFeed, parseFeed } from '../utils/feed.js';
 import { deleteFeedItemsFromDatabase } from '../utils/feedItem.js';
 import APIResponse from '../utils/response.js';
-import { validateFeedInfo, validateFeedURL } from '../utils/validate.js';
+import {
+	validateFeedInfo,
+	validateFeedURL,
+	validateLikedFeed,
+} from '../utils/validate.js';
 
 const retrieveUserFeeds = async (req, res, next) => {
 	try {
@@ -386,12 +390,68 @@ const deleteFeedIcon = async (req, res, next) => {
 	}
 };
 
+const likeFeed = async (req, res, next) => {
+	try {
+		const { error, value } = validateLikedFeed(req.body);
+
+		if (error) {
+			throw new APIError(
+				HttpsStatusCode.BAD_REQUEST,
+				error.details.map((msg) => msg.message)
+			);
+		}
+
+		const userId = req.userID;
+		const isLiked = value.favorite;
+		const FeedURL = value.url;
+
+		const likedFeed = await Feed.findOneAndUpdate(
+			{
+				$and: [{ url: FeedURL }, { addedBy: userId }],
+			},
+			{ favorite: isLiked },
+			{ runValidators: true, new: true }
+		);
+
+		const user = await User.findById(userId).select('+likedFeeds');
+
+		if (isLiked === true) {
+			user.likedFeeds.push(likedFeed._id);
+		} else {
+			const index = user.likedFeeds.indexOf(likedFeed._id);
+			if (0 <= index && index < user.likedFeeds.length) {
+				user.likedFeeds.splice(index, 1);
+			}
+		}
+
+		await user.save({ validateModifiedOnly: true });
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					likedFeed,
+					isLiked ? 'Feed Liked successfully' : 'Feed Dis-liked successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				error.message || 'Submition failed!! Try again later '
+			)
+		);
+	}
+};
+
 export {
 	createFeed,
 	deleteFeed,
 	deleteFeedIcon,
 	getFeed,
 	getFeedIcon,
+	likeFeed,
 	retrieveUserFeeds,
 	updateFeedIcon,
 	updateUserFeed,

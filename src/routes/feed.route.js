@@ -5,6 +5,7 @@ import {
 	deleteFeedIcon,
 	getFeed,
 	getFeedIcon,
+	likeFeed,
 	retrieveUserFeeds,
 	updateFeedIcon,
 	updateUserFeed,
@@ -30,5 +31,7 @@ router
 	.get(verifyAccess, getFeedIcon)
 	.patch(verifyAccess, upload.single('feedIcon'), updateFeedIcon)
 	.delete(verifyAccess, deleteFeedIcon);
+
+router.route('/like').patch(verifyAccess, likeFeed);
 
 export default router;
