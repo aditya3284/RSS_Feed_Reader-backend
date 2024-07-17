@@ -2,6 +2,8 @@ import fetch from 'node-fetch';
 import xml2js from 'xml2js';
 import { setValuesToFeedItem } from './feedItem.js';
 
+const parser = new xml2js.Parser();
+
 const fetchFeed = async (feedURL) => {
 	try {
 		const feedResponse = await fetch(feedURL, {
@@ -16,7 +18,7 @@ const fetchFeed = async (feedURL) => {
 
 const parseFeed = async (feedXML) => {
 	try {
-		const feed = await xml2js.parseStringPromise(feedXML, {
+		const feed = await parser.parseStringPromise(feedXML, {
 			trim: true,
 			strict: true,
 		});
@@ -27,10 +29,10 @@ const parseFeed = async (feedXML) => {
 	}
 };
 
-const SaveFeedItemInDatabase = async (feed, sourceFeedID) => {
+const SaveFeedItemInDatabase = async (feed, sourceFeedID, userId) => {
 	try {
 		const createdFeed = Object.values(feed.feed.entry).map(async (element) => {
-			await setValuesToFeedItem(element, sourceFeedID);
+			await setValuesToFeedItem(element, sourceFeedID, userId);
 		});
 
 		await Promise.all(createdFeed);
@@ -41,4 +43,4 @@ const SaveFeedItemInDatabase = async (feed, sourceFeedID) => {
 	}
 };
 
-export { fetchFeed, parseFeed, SaveFeedItemInDatabase };
+export { SaveFeedItemInDatabase, fetchFeed, parseFeed };
