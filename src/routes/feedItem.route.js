@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { verifyAccess } from '../middlewares/authentication.middleware.js';
 import {
 	getFeedItem,
-	updateFeedItem,
+	updateFeedItem
 } from '../controllers/feedItem.controller.js';
+import { verifyAccess } from '../middlewares/authentication.middleware.js';
 
 const routerOptions = { caseSensitive: false, strict: false };
 const router = Router(routerOptions);
