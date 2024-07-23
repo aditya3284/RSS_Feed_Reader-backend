@@ -28,6 +28,12 @@ const feedItemSchema = new Schema(
 			type: Date,
 			required: [true, 'fetch information is required'],
 		},
+		lastOpenedAt: {
+			type: Date,
+		},
+		daysAgo: {
+			type: Number,
+		},
 		content: {
 			type: String,
 		},
@@ -40,7 +46,15 @@ const feedItemSchema = new Schema(
 			required: [true, 'read status is required'],
 			default: false,
 		},
+		favorite: {
+			type: Boolean,
+			default: false,
+		},
 		readBy: {
+			type: Schema.Types.ObjectId,
+			ref: 'User',
+		},
+		addedForUser: {
 			type: Schema.Types.ObjectId,
 			ref: 'User',
 		},

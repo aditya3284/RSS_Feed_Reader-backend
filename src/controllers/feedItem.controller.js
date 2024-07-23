@@ -1,7 +1,7 @@
-import APIError from '../utils/errors.js';
-import APIResponse from '../utils/response.js';
 import { HttpsStatusCode } from '../constants.js';
 import { feedItem } from '../models/feedItem.model.js';
+import APIError from '../utils/errors.js';
+import APIResponse from '../utils/response.js';
 import { validateFeedItemInfo } from '../utils/validate.js';
 
 const getFeedItem = async (req, res, next) => {
@@ -11,7 +11,7 @@ const getFeedItem = async (req, res, next) => {
 		const Item = await feedItem.findByIdAndUpdate(
 			feedItemID,
 			{
-				$set: { readBy: req.userID, hasRead: true },
+				$set: { readBy: req.userID, hasRead: true, lastOpenedAt: new Date() },
 			},
 			{ new: true }
 		);
@@ -56,10 +56,14 @@ const updateFeedItem = async (req, res, next) => {
 			);
 		}
 
-		const updatedItem = await feedItem.findByIdAndUpdate(feedItemID, value, {
-			new: true,
-			runValidators: true,
-		});
+		const updatedItem = await feedItem.findByIdAndUpdate(
+			feedItemID,
+			{ hasRead: value.hasRead, readBy: req.userID, lastOpenedAt: new Date() },
+			{
+				new: true,
+				runValidators: true,
+			}
+		);
 
 		if (updatedItem instanceof Error) {
 			throw new APIError(
