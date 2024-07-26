@@ -1,4 +1,6 @@
+import mongoose from 'mongoose';
 import { HttpsStatusCode } from '../constants.js';
+import { Feed } from '../models/feed.model.js';
 import { feedItem } from '../models/feedItem.model.js';
 import APIError from '../utils/errors.js';
 import APIResponse from '../utils/response.js';
@@ -93,4 +95,61 @@ const updateFeedItem = async (req, res, next) => {
 	}
 };
 
-export { getFeedItem, updateFeedItem };
+const getAllFeedItems = async (req, res, next) => {
+	try {
+		const userId = String(req.userID);
+		const feedID = String(req.params.feedID);
+
+		const feed = await Feed.aggregate()
+			.match({
+				$and: [
+					{ _id: new mongoose.Types.ObjectId(feedID) },
+					{ addedBy: new mongoose.Types.ObjectId(userId) },
+				],
+			})
+			.lookup({
+				from: 'feeditems',
+				localField: '_id',
+				foreignField: 'sourceFeed',
+				as: 'items',
+			})
+			.project({
+				name: 1,
+				items: {
+					$sortArray: {
+						input: '$items',
+						sortBy: { publishedAt: -1 },
+					},
+				},
+				favorite: 1,
+				icon: 1,
+				url: 1,
+				lastFetched: 1,
+				createdAt: 1,
+				updatedAt: 1,
+				websiteURL: 1,
+			});
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					feed[0],
+					feed.length !== 0
+						? 'Requested Feed Retieved Successfully'
+						: "Requested Feed Doesn't Exist"
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				error.message ||
+					'Failed to retrive feed items for this feed!! Try again later '
+			)
+		);
+	}
+};
+
+export { getAllFeedItems, getFeedItem, updateFeedItem };

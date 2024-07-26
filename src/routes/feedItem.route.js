@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import {
+	getAllFeedItems,
 	getFeedItem,
-	updateFeedItem
+	updateFeedItem,
 } from '../controllers/feedItem.controller.js';
 import { verifyAccess } from '../middlewares/authentication.middleware.js';
 
@@ -12,5 +13,7 @@ router
 	.route('/i/:feedItemID')
 	.get(verifyAccess, getFeedItem)
 	.patch(verifyAccess, updateFeedItem);
+
+router.route('/f/:feedID').get(verifyAccess, getAllFeedItems);
 
 export default router;
