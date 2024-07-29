@@ -2,9 +2,13 @@ import mongoose from 'mongoose';
 import { HttpsStatusCode } from '../constants.js';
 import { Feed } from '../models/feed.model.js';
 import { feedItem } from '../models/feedItem.model.js';
+import { User } from '../models/user.model.js';
 import APIError from '../utils/errors.js';
 import APIResponse from '../utils/response.js';
-import { validateFeedItemInfo } from '../utils/validate.js';
+import {
+	validateFeedItemInfo,
+	validateLikedFeedItem,
+} from '../utils/validate.js';
 
 const getFeedItem = async (req, res, next) => {
 	try {
@@ -152,4 +156,61 @@ const getAllFeedItems = async (req, res, next) => {
 	}
 };
 
-export { getAllFeedItems, getFeedItem, updateFeedItem };
+const likeFeedItem = async (req, res, next) => {
+	try {
+		const { error, value } = validateLikedFeedItem(req.body);
+
+		if (error) {
+			throw new APIError(
+				HttpsStatusCode.BAD_REQUEST,
+				error.details.map((msg) => msg.message)
+			);
+		}
+
+		const userId = req.userID;
+		const isLiked = value.favorite;
+		const FeedItemURL = value.url;
+
+		const likedFeedItem = await feedItem.findOneAndUpdate(
+			{
+				$and: [{ url: FeedItemURL }, { addedForUser: userId }],
+			},
+			{ favorite: isLiked },
+			{ runValidators: true, new: true }
+		);
+
+		const user = await User.findById(userId).select('+likedFeedItems');
+
+		if (isLiked === true) {
+			user.likedFeedItems.push(likedFeedItem._id);
+		} else {
+			const index = user.likedFeedItems.indexOf(likedFeedItem._id);
+			if (0 <= index && index < user.likedFeedItems.length) {
+				user.likedFeedItems.splice(index, 1);
+			}
+		}
+
+		await user.save({ validateModifiedOnly: true });
+
+		return res
+			.status(200)
+			.json(
+				new APIResponse(
+					HttpsStatusCode.OK,
+					likedFeedItem,
+					isLiked
+						? 'Feed Item Liked successfully'
+						: 'Feed Item Dis-liked successfully'
+				)
+			);
+	} catch (error) {
+		next(
+			new APIError(
+				error.httpStatusCode || HttpsStatusCode.INTERNAL_SERVER_ERROR,
+				error.message || 'Submition failed!! Try again later '
+			)
+		);
+	}
+};
+
+export { getAllFeedItems, getFeedItem, likeFeedItem, updateFeedItem };
