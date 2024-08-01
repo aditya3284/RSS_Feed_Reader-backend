@@ -1,0 +1,413 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "server",
+    "collectionId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+    "dateExported": "2024-07-29T05:44:14.468Z",
+    "version": "1.2",
+    "folders": [
+        {
+            "_id": "8737b2d3-343f-4a19-a284-d68bac85e7d8",
+            "name": "User",
+            "containerId": "",
+            "created": "2024-05-06T10:02:26.310Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "e51f5202-2807-4212-8e8a-be3d3789a92d",
+            "name": "Profile",
+            "containerId": "8737b2d3-343f-4a19-a284-d68bac85e7d8",
+            "created": "2024-05-06T10:12:44.977Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "deb68e5a-ae04-4e32-9f79-75994e3ffe84",
+            "name": "Feed",
+            "containerId": "",
+            "created": "2024-05-06T10:02:32.653Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "2f5fe932-de6c-45d6-b5da-e1a6862decbd",
+            "name": "Feed Items",
+            "containerId": "",
+            "created": "2024-05-06T10:02:47.718Z",
+            "sortNum": 30000
+        },
+        {
+            "_id": "e97e12fd-62f1-4cdf-97a4-bbf79a0bb8e1",
+            "name": "Profile Picture",
+            "containerId": "e51f5202-2807-4212-8e8a-be3d3789a92d",
+            "created": "2024-05-06T10:32:07.655Z",
+            "sortNum": 50000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "4cbad401-0603-44cb-8ecf-9354139240c7",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "",
+            "name": "Refresh Token",
+            "url": "{{user}}/refresh-token",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-05-06T10:04:50.752Z",
+            "modified": "2024-05-06T10:08:31.771Z",
+            "headers": []
+        },
+        {
+            "_id": "5ca261ed-8a7a-44d8-97fc-40331a5a53b2",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "",
+            "name": "Sign-In",
+            "url": "{{user}}/signup",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-05-06T10:13:17.109Z",
+            "modified": "2024-07-05T18:19:46.862Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"2\",\n  \"email\": \"qw@qw.in\",\n  \"password\": \"12345678\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "b368c20b-9474-4b2b-a931-a22308caeb87",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "",
+            "name": "Log-In",
+            "url": "{{user}}/login",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-05-06T10:15:51.264Z",
+            "modified": "2024-07-21T13:16:40.990Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\":\"sh+e2+emar@gh-eu.we-i2.4de.in\",\n  \"password\":\"12345678\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "46a70b3a-61b0-4423-b98d-d77c23076389",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "",
+            "name": "Log-Out",
+            "url": "{{user}}/logout",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2024-05-06T10:17:00.329Z",
+            "modified": "2024-05-06T10:17:41.123Z",
+            "headers": []
+        },
+        {
+            "_id": "e1175613-1c1a-411e-ba21-e030d85c9f4d",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "e51f5202-2807-4212-8e8a-be3d3789a92d",
+            "name": "Get Profile Details",
+            "url": "{{profile}}",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2024-05-06T10:19:09.509Z",
+            "modified": "2024-05-06T10:20:44.967Z",
+            "headers": []
+        },
+        {
+            "_id": "cb8b15f3-8a02-4e8f-9d1b-a1f8c268500f",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "e51f5202-2807-4212-8e8a-be3d3789a92d",
+            "name": "Register Profile Details",
+            "url": "{{profile}}",
+            "method": "POST",
+            "sortNum": 60000,
+            "created": "2024-05-06T10:21:16.531Z",
+            "modified": "2024-07-05T18:27:38.443Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"fullName\": \"Don Joe\",\n  \"gender\": \"Male\",\n  \"age\": 37\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "f0d4fe27-8559-4d9a-92fb-66ed24cd610a",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "e51f5202-2807-4212-8e8a-be3d3789a92d",
+            "name": "Update Profile Details",
+            "url": "{{profile}}",
+            "method": "PATCH",
+            "sortNum": 70000,
+            "created": "2024-05-06T10:25:01.902Z",
+            "modified": "2024-07-05T18:27:59.968Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"fullName\": \"Foe\",\n  \"gender\": \"Male\",\n  \"age\": 37\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "b85e14cb-871d-4b70-9897-4a7088705fd5",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "e51f5202-2807-4212-8e8a-be3d3789a92d",
+            "name": "Delete User Profile",
+            "url": "{{profile}}",
+            "method": "DELETE",
+            "sortNum": 80000,
+            "created": "2024-05-06T10:26:12.577Z",
+            "modified": "2024-05-06T10:26:46.751Z",
+            "headers": []
+        },
+        {
+            "_id": "832772ce-7aef-46f9-883f-3a2631c97015",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "e97e12fd-62f1-4cdf-97a4-bbf79a0bb8e1",
+            "name": "Get Profile Picture",
+            "url": "{{profile-picture}}",
+            "method": "GET",
+            "sortNum": 90000,
+            "created": "2024-05-06T10:32:25.922Z",
+            "modified": "2024-05-06T10:33:36.951Z",
+            "headers": []
+        },
+        {
+            "_id": "41a99d7e-ab28-42c6-9b13-141f3689ad3d",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "e97e12fd-62f1-4cdf-97a4-bbf79a0bb8e1",
+            "name": "Update Profile Picture",
+            "url": "{{profile-picture}}",
+            "method": "PATCH",
+            "sortNum": 100000,
+            "created": "2024-05-06T10:34:14.220Z",
+            "modified": "2024-07-21T13:17:41.217Z",
+            "headers": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [],
+                "files": [
+                    {
+                        "name": "profilePictureToUpdate",
+                        "value": "c:\\Users\\Oxygen\\Documents\\3. Resources\\ghostrunner.jpg"
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "947b222e-2c83-40d5-ad0c-9a0ad3cdc6fd",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "e97e12fd-62f1-4cdf-97a4-bbf79a0bb8e1",
+            "name": "Delete Profile Picture",
+            "url": "{{profile-picture}}",
+            "method": "DELETE",
+            "sortNum": 110000,
+            "created": "2024-05-06T10:35:44.718Z",
+            "modified": "2024-05-06T10:35:52.727Z",
+            "headers": []
+        },
+        {
+            "_id": "ff546565-7636-4c46-8821-43dc9b6d34f9",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "8737b2d3-343f-4a19-a284-d68bac85e7d8",
+            "name": "Get User Read History",
+            "url": "{{user}}/history/read",
+            "method": "GET",
+            "sortNum": 120000,
+            "created": "2024-05-06T10:39:10.106Z",
+            "modified": "2024-05-06T10:40:00.421Z",
+            "headers": []
+        },
+        {
+            "_id": "cbea8ac4-00c8-465a-8f13-35cf00619faa",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "e51f5202-2807-4212-8e8a-be3d3789a92d",
+            "name": "Change Profile Password",
+            "url": "{{profile}}/password",
+            "method": "PATCH",
+            "sortNum": 130000,
+            "created": "2024-05-06T10:42:28.361Z",
+            "modified": "2024-05-06T10:46:05.861Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"oldPassword\": \"123456789\",\n  \"newPassword\": \"0123456789\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "1f884541-c9d2-41f1-a65d-0e1775d4fb4e",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "8737b2d3-343f-4a19-a284-d68bac85e7d8",
+            "name": "Get User Liked Feed Items",
+            "url": "{{user}}/liked/items",
+            "method": "GET",
+            "sortNum": 130000,
+            "created": "2024-07-01T11:31:24.611Z",
+            "modified": "2024-07-01T11:32:04.180Z",
+            "headers": []
+        },
+        {
+            "_id": "ad6d9551-ce24-4f45-a0fc-e3bbd1534a97",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "deb68e5a-ae04-4e32-9f79-75994e3ffe84",
+            "name": "Get User Feeds",
+            "url": "{{feed}}/u/2",
+            "method": "GET",
+            "sortNum": 140000,
+            "created": "2024-05-06T11:54:08.019Z",
+            "modified": "2024-07-06T17:33:26.154Z",
+            "headers": []
+        },
+        {
+            "_id": "822e6c00-4f98-4caa-a868-81e25bb1aa1c",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "8737b2d3-343f-4a19-a284-d68bac85e7d8",
+            "name": "Get User Liked Feeds",
+            "url": "{{user}}/liked/feeds",
+            "method": "GET",
+            "sortNum": 140000,
+            "created": "2024-07-01T11:32:10.522Z",
+            "modified": "2024-07-01T11:32:27.236Z",
+            "headers": []
+        },
+        {
+            "_id": "e52589ad-2c7b-4109-80dd-7695684ff137",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "deb68e5a-ae04-4e32-9f79-75994e3ffe84",
+            "name": "Get Feed",
+            "url": "{{feed}}/f/gameranx",
+            "method": "GET",
+            "sortNum": 150000,
+            "created": "2024-05-06T11:55:02.316Z",
+            "modified": "2024-05-08T10:45:33.028Z",
+            "headers": []
+        },
+        {
+            "_id": "c380dee4-29aa-4dad-b251-34b0bf22e806",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "8737b2d3-343f-4a19-a284-d68bac85e7d8",
+            "name": "Get All Feed Items",
+            "url": "{{user}}/all/items",
+            "method": "GET",
+            "sortNum": 150000,
+            "created": "2024-07-01T11:32:40.507Z",
+            "modified": "2024-07-01T11:34:04.729Z",
+            "headers": []
+        },
+        {
+            "_id": "ad713665-6362-439d-b87d-ab2c1a937a44",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "deb68e5a-ae04-4e32-9f79-75994e3ffe84",
+            "name": "Update Feed",
+            "url": "{{feed}}/f/gameranx",
+            "method": "PATCH",
+            "sortNum": 160000,
+            "created": "2024-05-06T11:57:11.143Z",
+            "modified": "2024-07-01T19:12:11.797Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"gameranx\",\n  \"iconUrl\": \"https://yt3.googleusercontent.com/ytc/AIdro_mT3hsjvr0yyS6bW4inz3956572zV_j4t7TLsEOkK0G1VM=s160-c-k-c0x00ffffff-no-rj\",\n  \"textDirection\": \"ltr\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "499804db-1677-43d9-8427-b88c8cbd610b",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "deb68e5a-ae04-4e32-9f79-75994e3ffe84",
+            "name": "Delete Feed",
+            "url": "{{feed}}/f/g",
+            "method": "DELETE",
+            "sortNum": 170000,
+            "created": "2024-05-06T11:59:30.936Z",
+            "modified": "2024-07-23T06:28:17.245Z",
+            "headers": []
+        },
+        {
+            "_id": "27d61f25-fce8-43e3-a1bb-7a703edc5bf0",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "deb68e5a-ae04-4e32-9f79-75994e3ffe84",
+            "name": "Like Feed",
+            "url": "{{feed}}/like",
+            "method": "PATCH",
+            "sortNum": 170000,
+            "created": "2024-07-01T19:11:59.748Z",
+            "modified": "2024-07-04T18:29:10.370Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"favorite\": true,\n  \"url\":\"https://www.youtube.com/feeds/videos.xml?channel_id=UCNvzD7Z-g64bPXxGzaQaa4g\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "0cdddb98-346d-42ed-95ec-3afe162448c4",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "deb68e5a-ae04-4e32-9f79-75994e3ffe84",
+            "name": "Submit/Add Feed",
+            "url": "{{feed}}/submit",
+            "method": "POST",
+            "sortNum": 180000,
+            "created": "2024-05-06T12:00:09.852Z",
+            "modified": "2024-07-03T11:12:45.427Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"feedURL\": \"https://www.youtube.com/feeds/videos.xml?channel_id=UCBJycsmduvYEL83R_U4JriQ\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "20a2dbd9-62af-4ff9-96b5-a2cf68650fcf",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "2f5fe932-de6c-45d6-b5da-e1a6862decbd",
+            "name": "Get Feed Item",
+            "url": "{{feed-item}}/i/663b5d7a37d204f19da168b4",
+            "method": "GET",
+            "sortNum": 190000,
+            "created": "2024-05-06T12:03:23.205Z",
+            "modified": "2024-05-08T11:34:37.734Z",
+            "headers": []
+        },
+        {
+            "_id": "0bafa660-4c48-414b-be17-0e6832487373",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "2f5fe932-de6c-45d6-b5da-e1a6862decbd",
+            "name": "Update Feed Item Info.",
+            "url": "{{feed-item}}/i/66898fe033d38089921efae9",
+            "method": "PATCH",
+            "sortNum": 200000,
+            "created": "2024-05-06T12:05:42.660Z",
+            "modified": "2024-07-07T18:28:13.064Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"hasRead\": true\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "dfc1a66e-1bde-4dbb-9b0d-dac51ffcb229",
+            "colId": "a34fa91c-0276-4b48-9ca2-bc42abd50478",
+            "containerId": "2f5fe932-de6c-45d6-b5da-e1a6862decbd",
+            "name": "Like Feed Item",
+            "url": "{{feed-item}}/like",
+            "method": "PATCH",
+            "sortNum": 210000,
+            "created": "2024-07-01T19:15:07.481Z",
+            "modified": "2024-07-04T18:28:07.451Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"favorite\": true,\n  \"url\": \"https://www.youtube.com/watch?v=PeDj1GiaEo8\"\n}",
+                "form": []
+            }
+        }
+    ],
+    "settings": {
+        "options": {
+            "baseUrl": "http://localhost:3737/api/v1"
+        }
+    },
+    "ref": "d0uh6MVDhDUwuEgO_WgaDz29YMPJxY8PygQl-JSYAoZaCl9qJZ_8vWWZMbrRagls5MeoiK49MAA3yTddop-s_A"
+}

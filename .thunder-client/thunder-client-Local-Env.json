@@ -1,0 +1,32 @@
+{
+    "clientName": "Thunder Client",
+    "environmentName": "(Local Env)",
+    "environmentId": "b01a2f74-8c45-4324-8800-50718a780650",
+    "dateExported": "2024-07-29T05:43:36.979Z",
+    "version": "1.2",
+    "global": true,
+    "local": true,
+    "variables": [
+        {
+            "name": "user",
+            "value": "/user"
+        },
+        {
+            "name": "feed",
+            "value": "/feed"
+        },
+        {
+            "name": "feed-item",
+            "value": "/feed-item"
+        },
+        {
+            "name": "profile",
+            "value": "/user/profile"
+        },
+        {
+            "name": "profile-picture",
+            "value": "/user/profile/picture"
+        }
+    ],
+    "ref": "BKmbDoaFfjq_vD5u3Sh0bw2502W-zAyR0mjBKJT9Z_e8vHGPhnCimKr0P93lc0rh"
+}
