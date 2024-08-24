@@ -21,5 +21,4 @@ export const emailRegex = /^\w+([.+-]?\w+)+@\w+([.-]?\w+)+\.(\w{2,6})$/;
 export const cookieOptions = {
 	httpOnly: process.env.HTTP_ONLY_COOKIE ?? true,
 	secure: process.env.COOKIE_SECURE ?? false,
-	sameSite: process.env.COOKIE_SAME_SITE ?? 'none',
 };
