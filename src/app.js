@@ -8,7 +8,11 @@ import feedItemRouter from './routes/feedItem.route.js';
 import userRouter from './routes/user.route.js';
 
 const app = express();
-const corsOptions = { origin: process.env.CORS_ORIGIN };
+const corsOptions = {
+	origin: process.env.CORS_ORIGIN,
+	allowedHeaders: ['Content-Type', 'Authorization'],
+	credentials: true,
+};
 const jsonOptions = { limit: '16kb', strict: true };
 const urlencodedOptions = { limit: '16kb', extended: true, parameterLimit: 10 };
 
