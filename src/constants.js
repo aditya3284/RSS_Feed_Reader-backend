@@ -22,4 +22,5 @@ export const cookieOptions = {
 	domain: process.env.COOKIE_DOMIAN,
 	httpOnly: process.env.HTTP_ONLY_COOKIE ?? true,
 	secure: process.env.COOKIE_SECURE ?? false,
+	sameSite: process.env.COOKIE_SAME_SITE ?? 'Lax',
 };
