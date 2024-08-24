@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import { HttpsStatusCode } from '../constants.js';
+import { HttpsStatusCode, cookieOptions } from '../constants.js';
 import { Feed } from '../models/feed.model.js';
 import { feedItem } from '../models/feedItem.model.js';
 import { User } from '../models/user.model.js';
@@ -129,8 +129,6 @@ const loginUser = async (req, res, next) => {
 			'+_id, +username, +email +fullName +dateOfBirth +profilePicture'
 		);
 
-		const cookieOptions = { httpOnly: true, secure: false, sameSite: 'strict' };
-
 		return res
 			.status(200)
 			.cookie('accessToken', accessToken, cookieOptions)
@@ -161,7 +159,7 @@ const logOutUser = async (req, res, next) => {
 			},
 			{ new: true }
 		);
-		const cookieOptions = { httpOnly: true, secure: false, sameSite: 'strict' };
+
 		return res
 			.status(200)
 			.clearCookie('accessToken', cookieOptions)
@@ -214,8 +212,6 @@ const refreshAccessToken = async (req, res, next) => {
 		const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
 			user._id
 		);
-
-		const cookieOptions = { httpOnly: true, secure: false, sameSite: 'strict' };
 
 		return res
 			.status(200)
@@ -434,12 +430,6 @@ const deleteUserProfile = async (req, res, next) => {
 		});
 
 		await Promise.all(deleteUserFeeds);
-
-		const cookieOptions = {
-			httpOnly: true,
-			secure: false,
-			sameSite: 'strict',
-		};
 
 		await removeImageFromCloudinary(deletedUser.profilePicture.image_id);
 
@@ -912,6 +902,5 @@ export {
 	registerUser,
 	registerUserProfileDetails,
 	updateProfilePicture,
-	updateUserProfileDetails
+	updateUserProfileDetails,
 };
-

@@ -11,14 +11,15 @@ export const HttpsStatusCode = {
 	INTERNAL_SERVER_ERROR: 500,
 };
 
-export const allowedImageFormats = [
-	'webp',
-	'jpeg',
-	'jpg',
-	'png',
-];
+export const allowedImageFormats = ['webp', 'jpeg', 'jpg', 'png'];
 
 export const emailRegex = /^\w+([.+-]?\w+)+@\w+([.-]?\w+)+\.(\w{2,6})$/;
 
 // escaped backslash used in the below regex, due to warning by single backslash
 // export const emailRegex = new RegExp('^\\w+([\.+\-]?\\w+)+@\\w+([\.\-]?\\w+)+\\.(\\w{2,6})$');
+
+export const cookieOptions = {
+	httpOnly: process.env.HTTP_ONLY_COOKIE ?? true,
+	secure: process.env.COOKIE_SECURE ?? false,
+	sameSite: process.env.COOKIE_SAME_SITE ?? 'none',
+};
