@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import { HttpsStatusCode } from '../constants.js';
+import { HttpsStatusCode, cookieOptions } from '../constants.js';
 import { Feed } from '../models/feed.model.js';
 import { feedItem } from '../models/feedItem.model.js';
 import { User } from '../models/user.model.js';
@@ -131,8 +131,8 @@ const loginUser = async (req, res, next) => {
 
 		return res
 			.status(200)
-			.cookie('accessToken', accessToken)
-			.cookie('refreshToken', refreshToken)
+			.cookie('accessToken', accessToken, cookieOptions)
+			.cookie('refreshToken', refreshToken, cookieOptions)
 			.json(
 				new APIResponse(
 					HttpsStatusCode.OK,
@@ -162,8 +162,8 @@ const logOutUser = async (req, res, next) => {
 
 		return res
 			.status(200)
-			.clearCookie('accessToken')
-			.clearCookie('refreshToken')
+			.clearCookie('accessToken', cookieOptions)
+			.clearCookie('refreshToken', cookieOptions)
 			.json(
 				new APIResponse(HttpsStatusCode.OK, {}, 'User Logged out Successfully')
 			);
@@ -215,8 +215,8 @@ const refreshAccessToken = async (req, res, next) => {
 
 		return res
 			.status(200)
-			.cookie('accessToken', accessToken)
-			.cookie('refreshToken', refreshToken)
+			.cookie('accessToken', accessToken, cookieOptions)
+			.cookie('refreshToken', refreshToken, cookieOptions)
 			.json(
 				new APIResponse(
 					HttpsStatusCode.OK,
@@ -435,8 +435,8 @@ const deleteUserProfile = async (req, res, next) => {
 
 		return res
 			.status(200)
-			.clearCookie('refreshToken')
-			.clearCookie('accessToken')
+			.clearCookie('refreshToken', cookieOptions)
+			.clearCookie('accessToken', cookieOptions)
 			.json(
 				new APIResponse(
 					HttpsStatusCode.OK,
