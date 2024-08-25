@@ -20,8 +20,8 @@ export const emailRegex = /^\w+([.+-]?\w+)+@\w+([.-]?\w+)+\.(\w{2,6})$/;
 
 export const cookieOptions = {
 	domain: '.onrender.com',
-	httpOnly: true,
-	secure: true,
-	sameSite: "Lax",
+	httpOnly: false,
+	secure: false,
+	sameSite: 'Lax',
 	maxAge: 6 * 60 * 60 * 1000,
 };
