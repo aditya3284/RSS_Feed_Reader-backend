@@ -19,8 +19,9 @@ export const emailRegex = /^\w+([.+-]?\w+)+@\w+([.-]?\w+)+\.(\w{2,6})$/;
 // export const emailRegex = new RegExp('^\\w+([\.+\-]?\\w+)+@\\w+([\.\-]?\\w+)+\\.(\\w{2,6})$');
 
 export const cookieOptions = {
-	domain: process.env.COOKIE_DOMIAN,
-	httpOnly: process.env.HTTP_ONLY_COOKIE ?? true,
-	secure: process.env.COOKIE_SECURE ?? false,
-	sameSite: process.env.COOKIE_SAME_SITE ?? 'Lax',
+	domain: '.onrender.com',
+	httpOnly: true,
+	secure: true,
+	sameSite: "Lax",
+	maxAge: 6 * 60 * 60 * 1000,
 };
