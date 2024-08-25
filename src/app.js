@@ -11,7 +11,6 @@ const app = express();
 const corsOptions = {
 	origin: process.env.CORS_ORIGIN,
 	allowedHeaders: ['Content-Type', 'Authorization'],
-	credentials: true,
 };
 const jsonOptions = { limit: '16kb', strict: true };
 const urlencodedOptions = { limit: '16kb', extended: true, parameterLimit: 10 };
