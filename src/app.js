@@ -10,7 +10,7 @@ import userRouter from './routes/user.route.js';
 const app = express();
 const corsOptions = {
 	origin: process.env.CORS_ORIGIN,
-	allowedHeaders: ['Content-Type'],
+	allowedHeaders: ['Content-Type', 'Cookie'],
 	credentials: true,
 };
 const jsonOptions = { limit: '16kb', strict: true };
