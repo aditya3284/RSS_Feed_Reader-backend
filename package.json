@@ -6,7 +6,9 @@
 	"main": "src/server.js",
 	"scripts": {
 		"dev": "nodemon",
-		"lint": "eslint . --max-warnings 0 --report-unused-disable-directives"
+		"server": "node --env-file=.env ./src/server.js",
+		"lint": "eslint . --max-warnings 0 --report-unused-disable-directives",
+		"format": "prettier ."
 	},
 	"keywords": [],
 	"author": "",

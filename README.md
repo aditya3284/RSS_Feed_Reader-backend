@@ -4,19 +4,19 @@ A backend using **Node.js**, **Express.js**, and **MongoDB**, with support for v
 
 ## Table of Contents
 
-- [Description](#-description)
-- [Prerequisites](#-prerequisites)
-- [Technologies Used](#-technologies-used)
-- [Features](#-features)
-- [Installation and Setup](#-installation-and-setup)
-- [Running the Project](#-running-the-project)
-- [Project Structure](#-project-structure)
-- [Testing](#-testing)
-- [Contributing](#-contributing)
-- [Acknowledgments](#-acknowledgments)
-- [Things I learned](#-things-i-learned)
-- [Future Scope](#-future-scope)
-- [Contact](#-contact)
+- [Description](#description)
+- [Prerequisites](#prerequisites)
+- [Technologies Used](#technologies-used)
+- [Features](#features)
+- [Installation and Setup](#installation-and-setup)
+- [Running the Project](#running-the-project)
+- [Project Structure](#project-structure)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [Acknowledgments](#acknowledgments)
+- [Things I learned](#things-i-learned)
+- [Future Scope](#future-scope)
+- [Contact](#contact)
 
 ## Description
 
@@ -73,11 +73,6 @@ This project is a RESTful API built with Node.js as runtime and MongoDB for data
 - **ESLint & Prettier:** Tools for code quality and formatting.
 
 ## Features
-
-- **User Authentication**: Secure authentication using JWT and Bcrypt.
-- **File Upload**: Support for media file uploads using Cloudinary and Multer.
-- **Data Validation**: Request data validation using Joi.
-- **API Testing**: Endpoints tested using Thunder Client.
 
 - **RSS Feed Aggregation:** Fetches and displays video posts from selected YouTube channels using their RSS feeds, bypassing the need for YouTube's official API and recommendation algorithms.
 
@@ -148,29 +143,29 @@ To set up this project locally, follow these steps:
 Here is a brief overview of the project structure:
 
 ```
-/.thunder-client    # Thunder client configuration
+/.thunder-client            # Thunder client configuration
 /public
-    /assets         # Uploaded assets
-        .gitkeep    # Commit empty folder
+    /assets                 # Uploaded assets
+        .gitkeep            # Commit empty folder
 /src
-    /controllers    # Controllers for handling requests
-    /db             # Database Configuration
-    /middlewares    # Middleware functions
-    /models         # Mongoose models
-    /routes         # API routes
-    /utils          # Utility functions
-    app.js          # Main application file
-    constants.js    # Configuration constants
-    server.js       # Server entry point
-.env                # Environment variables
-.env.sample         # Sample environment variables
-.eslintrc.js        # ESLint configuration
-.gitignore          # Git ignore files
-.prettierignore     # Prettier ignore files
-.prettierrc         # Prettier configuration
-nodemon.json        # Nodemon configuration
-package-lock.json   # Locks dependencies versions
-package.json        # Project metadata and dependencies
+    /controllers            # Controllers for handling requests
+    /db                     # Database Configuration
+    /middlewares            # Middleware functions
+    /models                 # Mongoose models
+    /routes                 # API routes
+    /utils                  # Utility functions
+    app.js                  # Main application file
+    constants.js            # Configuration constants
+    server.js               # Server entry point
+.env                        # Environment variables
+.env.sample                 # Sample environment variables
+.eslintrc.js                # ESLint configuration
+.gitignore                  # Git ignore files
+.prettierignore             # Prettier ignore files
+.prettierrc                 # Prettier configuration
+nodemon.json                # Nodemon configuration
+package-lock.json           # Locks dependencies versions
+package.json                # Project metadata and dependencies
 ```
 
 ## Testing
@@ -261,4 +256,4 @@ For any questions or feedback, please reach out to:
 
 ---
 
-Thank you for checking out my project! If this project helped / interest you, then give it a :star2: Star.
+Thank you for checking out my project! If this project helped / interests you, then give it a :star2: Star.
