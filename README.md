@@ -252,7 +252,6 @@ For any questions or feedback, please reach out to:
 
 - :e-mail: **Email:** github@technologist.anonaddy.com
 - :point_right: **LinkedIn:** [in/pratap-adit](https://www.linkedin.com/in/yourprofile)
-- :octocat: **GitHub:** [UniPasc](https://github.com/UniPasc)
 
 ---
 
