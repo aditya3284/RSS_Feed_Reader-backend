@@ -22,7 +22,7 @@ A backend using **Node.js**, **Express.js**, and **MongoDB**, with support for v
 
 This project is a RESTful API built with Node.js as runtime and MongoDB for database. It provides a backend service for managing user accounts and media files. Key features include user authentication, file upload handling, and data validation.
 
-[**Feed Reader Frontend GitHub Repoistory**](RSS_Feed_Reader-backend/RSS_Feed_Reader-frontend)
+[**Feed Reader Frontend GitHub Repoistory**](https://github.com/aditya3284/RSS_Feed_Reader-frontend)
 
 - **Technology Stack**: MongoDB, Express.js, Node.js
 - **Key Dependencies**: Cloudinary, Bcrypt, Joi, Multer, JSON Web Token (JWT), Cross-Origin Resource Sharing (CORS), XML2JS
